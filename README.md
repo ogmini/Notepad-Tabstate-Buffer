@@ -56,4 +56,10 @@ Below is an example of a chunk of bytes that represent deletion at a position 1.
  - Breakdown of the header information
  - Unknown bytes contained within the chunks. Particularly the last 5 bytes. These might be some sort of hash or CRC of the position and character/action?
 
+## Application
+
+> WORK IN PROGRESS
+
+At the moment, this will only work on deciphering unsaved buffers. Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned.
+
 
