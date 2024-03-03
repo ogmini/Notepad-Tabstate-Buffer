@@ -14,9 +14,9 @@ namespace NotepadBufferParser
         {
             //string fileName = "C:\\Users\\Reversing\\Desktop\\Copies\\8a547232-5156-490b-96d9-f9d48ec9c325.bin";
             //string fileName = "C:\\Users\\Reversing\\Desktop\\Copies\\e893561e-87f3-4f6b-b1a3-5612df9c96c9.bin";
-            string f = "aab3af03-89ca-421e-83e4-c7103f08d3bc.bin";
+            string f = "2.bin";
             //83ac1000-f1ce-4e7d-9919-feb0bc0415c5.bin
-            string fileName = "C:\\Users\\Reversing\\Desktop\\Copies\\" + f;
+            string fileName = "C:\\Users\\Reversing\\Desktop\\Copies\\1\\" + f;
             using (var stream = File.OpenRead(fileName))
             {
                 using (var reader = new BinaryReader(stream))
