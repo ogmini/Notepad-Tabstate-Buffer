@@ -20,8 +20,27 @@ For now, I will be focusing on getting a better understanding of the underlying 
    - Cursor position (Stored as a unsigned LEB128)
    - Action (1 byte)
    - Other information dependant on the action such as character inserted
+  
+### Insert Chunk
 
-## Unknown
+Below is an example of a chunk of bytes that represent the insertion of the character 'a' at position 0.
+
+![Screenshot of Insertion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Insert-Chunk.png).
+
+00 - unsigned LEB128 denoting position of 0
+00 - 0 denoting action of "Insertion"
+01 - Unknown, possibly just a delimiter? 
+61 - character 'a'
+00 BB 06 C7 CC - Unknown, possibly a hash/CRC of the position and character?
+
+![Screenshot of Insertion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Insert-Chunk-2.png).
+FA 84 01 - unsigned LEB128 denoting position of 17018
+00 - 0 denoting action of "Insertion"
+01 - Unknown, possibly just a delimiter?
+61 - character 'a'
+00 98 07 F5 46 - Unknown, possibly a hash/CRC of the position and character?
+
+## Open Questions
 
  - Breakdown of the header information
  - Unknown bytes contained within the chunks. Particularly the last 5 bytes. These might be some sort of hash or CRC of the position and character/action?
