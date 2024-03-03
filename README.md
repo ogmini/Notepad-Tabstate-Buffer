@@ -42,7 +42,7 @@ FA 84 01 - unsigned LEB128 denoting position of 17018
 61 - character 'a'  
 00 98 07 F5 46 - Unknown, possibly a hash/CRC of the position and character?  
 
-### Deletion Chunk
+### Deletion Chunk by using Backspace
 
 Below is an example of a chunk of bytes that represent deletion at a position 1.
 
@@ -55,5 +55,12 @@ Below is an example of a chunk of bytes that represent deletion at a position 1.
 
  - Breakdown of the header information
  - Unknown bytes contained within the chunks. Particularly the last 5 bytes. These might be some sort of hash or CRC of the position and character/action?
+ - What other actions are there? Preliminary testing has determined that backspace isn't the same as selecting and deleting.
+
+## Application
+
+> WORK IN PROGRESS
+
+At the moment, this will only work on deciphering unsaved buffers. Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned.
 
 
