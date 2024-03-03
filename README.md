@@ -1,6 +1,6 @@
 > WORK IN PROGRESS
 >
-> What you see here ever evolving notes and changing code as a investigate.
+> What you see here are ever evolving notes and changing code as a investigate the file format.
 
 # Notepad-Tabstate-Buffer
 
