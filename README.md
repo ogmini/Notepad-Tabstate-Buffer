@@ -19,7 +19,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
  - Proceeding these 17 bytes we have chunks of bytes that describe
    - Cursor position (Stored as a unsigned LEB128)
    - Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
-   - Addition Action (TBD)
+   - Addition Action (Stored as an unsigned LEB128 indicating how many characters to add)
    - Other information dependant on the action such as character inserted
   
 ### Addition Chunk
@@ -30,7 +30,7 @@ Below is an example of a chunk of bytes that represent the addition of the chara
 
 00 - unsigned LEB128 denoting position of 0  
 00 - 0 denotes no deletion  
-01 - 1 denotes addition  
+01 - 1 denotes addition of 1 character    
 61 - character 'a'  
 00 BB 06 C7 CC - Unknown, possibly a hash/CRC of the position and character?  
 
@@ -39,7 +39,7 @@ Below is an example of a chunk of bytes that represent the addition of the chara
 ![Screenshot of Insertion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Insert-Chunk-2.png)
 FA 84 01 - unsigned LEB128 denoting position of 17018  
 00 - 0 denotes no deletion    
-01 - 1 denotes addition    
+01 - 1 denotes addition of 1 character      
 61 - character 'a'  
 00 98 07 F5 46 - Unknown, possibly a hash/CRC of the position and character?  
 
@@ -49,7 +49,7 @@ Below is an example of a chunk of bytes that represent deletion at a position 1.
 
 ![Screenshot of Deletion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Delete-Chunk.png)
 01 - unsigned LEB128 denoting position of 1  
-01 - 1 denotes deletion  
+01 - 1 denotes deletion of 1 character    
 00 - 0 denotes no addition  
 E7 98 82 64 - Unknown, possibly a hash/CRC of the position and action? Interesting this is now 4 bytes
 
