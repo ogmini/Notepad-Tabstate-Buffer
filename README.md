@@ -26,7 +26,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
    -  The 45 bytes seem to end with the bytes for the length of the original content twice, 01 00 00 00, and the lenght of the original content again. (Ex. 96 02 96 02 01 00 00 00 96 02 when the length of the original content was 96 02 or 278)
  - Content
  - Unknown 5 bytes
-   - Possibly a NULL followed by 4 bytes
+   - Possibly a NULL followed by 4 bytes (These appear to be CRC-32)
  - Unsaved Buffer Chunks
 
 ## Chunk Format for Unsaved Buffer
