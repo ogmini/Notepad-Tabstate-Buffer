@@ -36,7 +36,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
 - Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
 - Addition Action (Stored as an unsigned LEB128 indicating how many characters to add)
   - Added characters are stored as little-endian UTF-16
-- Unknown 4 bytes
+- CRC 32 of the previous bytes
   
 ### Addition Chunk
 
@@ -48,7 +48,7 @@ Below is an example of a chunk of bytes that represent the addition of the chara
 00 - unsigned LEB128 denoting number of characters deleted  
 01 - unsigned LEB128 denoting number of characters added (In this case 1)     
 61 00 - character 'a'  
-BB 06 C7 CC - Unknown, possibly a hash/CRC of the position and character?  
+BB 06 C7 CC - CRC 32 of previous bytes  
 
 Below is an example of a chunk of bytes that represent the addition of the character 'a' at position 17018.
 
@@ -57,7 +57,7 @@ FA 84 01 - unsigned LEB128 denoting position of 17018
 00 - unsigned LEB128 denoting number of characters deleted   
 01 - unsigned LEB128 denoting number of characters added (In this case 1)         
 61 00 - character 'a'  
-98 07 F5 46 - Unknown, possibly a hash/CRC of the position and character?  
+98 07 F5 46 - CRC 32 of previous bytes     
 
 ### Deletion Chunk 
 
@@ -67,7 +67,7 @@ Below is an example of a chunk of bytes that represent deletion at a position 1.
 01 - unsigned LEB128 denoting position of 1  
 01 - unsigned LEB128 denoting number of characters deleted (In this case 1)      
 00 - unsigned LEB128 denoting number of characters added   
-E7 98 82 64 - Unknown, possibly a hash/CRC of the position and action? Interesting this is now 4 bytes
+E7 98 82 64 - CRC 32 of previous bytes 
 
 ### Insertion Chunk
 
@@ -81,12 +81,12 @@ Insertion chunk is a combination of the addition and deletion. This would occur 
 62 00 - character 'b'  
 62 00 - character 'b'  
 62 00 - character 'b'  
-CD CD 85 6F - Unknown, possibly a hash/CRC of the position and action? Interesting this is now 4 bytes  
+CD CD 85 6F - CRC 32 of previous bytes 
 
 ## Open Questions
 
  - Breakdown of the header information
- - Unknown bytes contained within the chunks. Particularly the last 4 bytes. These might be some sort of hash or CRC of the position and character/action?
+ - Unknown bytes 
  - What other actions are there?
 
 ## Application
