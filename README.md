@@ -11,19 +11,23 @@ There are different types of .bin files that appear to save the state of the var
 - saved file with unsaved changes stored only in buffer
 - others?
 
-For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text.
+For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text. I have not attacked the 0.bin and 1.bin files.
 
-## Header
+## File Format
 
  - First 2 bytes are "NP"
  - 3rd byte is unknown
+   - Possibly a NULL as a delimiter
  - 4th byte appears to be flag for saved file
  - Length of Filepath (Stored as an unsigned LEB128)
  - Filepath as little-ending UTF-16
  - Length of original content (Stored as an unsigned LEB128)
- - Unknown possibly 52 bytes (Need to investigate)
+ - Unknown appears to be 45 bytes followed by a delimiter (Need to investigate)
+   -  The 45 bytes seem to end with the bytes for the length of the original content twice, 01 00 00 00, and the lenght of the original content again. (Ex. 96 02 96 02 01 00 00 00 96 02 when the length of the original content was 96 02 or 278)
  - Content
- - Unknown 5 bytes  
+ - Unknown 5 bytes
+   - Possibly a NULL followed by 4 bytes
+ - Unsaved Buffer Chunks
 
 ## Chunk Format for Unsaved Buffer
 
@@ -31,7 +35,8 @@ For now, I will be focusing on getting a better understanding of the underlying 
 - Cursor position (Stored as a unsigned LEB128)
 - Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
 - Addition Action (Stored as an unsigned LEB128 indicating how many characters to add)
-  - Added characters are stored as little-endian UTF-16 
+  - Added characters are stored as little-endian UTF-16
+- Unknown 4 bytes
   
 ### Addition Chunk
 
@@ -66,6 +71,8 @@ E7 98 82 64 - Unknown, possibly a hash/CRC of the position and action? Interesti
 
 ### Insertion Chunk
 
+Insertion chunk is a combination of the addition and deletion. This would occur if someone was to select text and paste new text into place.
+
 ## Open Questions
 
  - Breakdown of the header information
@@ -76,7 +83,7 @@ E7 98 82 64 - Unknown, possibly a hash/CRC of the position and action? Interesti
 
 > WORK IN PROGRESS
 
-At the moment, this will only work on deciphering unsaved buffers. Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned.
+Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned.
 
 ![Example 1-1](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/screenshots/Example%201-1.png)
 ![Example 1-2](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/screenshots/Example%201-2.png)
