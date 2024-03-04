@@ -11,7 +11,7 @@ There are different types of .bin files that appear to save the state of the var
 - saved file with unsaved changes stored only in buffer
 - others?
 
-For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text.
+For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text. I have not attacked the 0.bin and 1.bin files.
 
 ## File Format
 
