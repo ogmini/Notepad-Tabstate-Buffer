@@ -17,6 +17,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
 
  - First 2 bytes are "NP"
  - 3rd byte is unknown
+   - Possibly a NULL as a delimiter
  - 4th byte appears to be flag for saved file
  - Length of Filepath (Stored as an unsigned LEB128)
  - Filepath as little-ending UTF-16
