@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO.Hashing;
+
 
 namespace NotepadBufferParser
 {
@@ -55,8 +57,8 @@ namespace NotepadBufferParser
                             string originalContent = Encoding.Unicode.GetString(reader.ReadBytes((int)fileContentLength * 2));
                             Console.WriteLine("Original Content - " + originalContent);
 
-                            reader.ReadBytes(5); //TODO: Unknown
-
+                            reader.ReadBytes(1); //TODO: Unknown 
+                            reader.ReadBytes(4); //CRC 32 
                             //TODO: This might not actually be the end of the stream....
                             //TODO: Attempt to read change buffer
                         }
@@ -75,9 +77,23 @@ namespace NotepadBufferParser
 
                         while (reader.BaseStream.Length > reader.BaseStream.Position)
                         {
+                            List<byte> crc32Check = new List<byte>();
+
                             var charPos = ReadLEB128Unsigned(stream);
+                            foreach (byte b in WriteLEB128Unsigned(charPos))
+                            {
+                                crc32Check.Add(b);
+                            }
                             var charDeletion = ReadLEB128Unsigned(stream);
+                            foreach (byte b in WriteLEB128Unsigned(charDeletion))
+                            {
+                                crc32Check.Add(b);
+                            }
                             var charAddition = ReadLEB128Unsigned(stream);
+                            foreach (byte b in WriteLEB128Unsigned(charAddition))
+                            {
+                                crc32Check.Add(b);
+                            }
 
                             //TODO: This might be cleaner than below code
                             //if (charDeletion > 0)
@@ -102,6 +118,10 @@ namespace NotepadBufferParser
                                 for (int p = 0; p < (int)charAddition; p++)
                                 {
                                     var bytesChar = reader.ReadBytes(2);
+                                    foreach (byte b in bytesChar)
+                                    {
+                                        crc32Check.Add(b);
+                                    }
                                     var str = Encoding.Unicode.GetString(bytesChar);
 
                                     Console.WriteLine("Addition at Position " + ((int)charPos + p).ToString() + " - Character " + str + " | " + bytesChar[0].ToString("X2"));
@@ -117,6 +137,10 @@ namespace NotepadBufferParser
                                 for (int p = 0; p < (int)charAddition; p++)
                                 {
                                     var bytesChar = reader.ReadBytes(2);
+                                    foreach (byte b in bytesChar)
+                                    {
+                                        crc32Check.Add(b);
+                                    }
                                     var str = Encoding.Unicode.GetString(bytesChar);
 
                                     Console.WriteLine("Insertion at Position " + ((int)charPos + p).ToString() + " - Character " + str + " | " + bytesChar[0].ToString("X2"));
@@ -127,7 +151,15 @@ namespace NotepadBufferParser
                                 Console.WriteLine("Uhh");
                             }
 
-                            var unKnown = reader.ReadBytes(4); //TODO: Unknown
+                            var crc32calculated = Crc32.Hash(crc32Check.ToArray());
+                            Array.Reverse(crc32calculated);
+                            
+                            var unKnown = reader.ReadBytes(4); //CRC 32 
+
+                            if (crc32calculated.SequenceEqual(unKnown))
+                            {
+                                Console.WriteLine("CRC Pass Match");
+                            }
                         }
 
                         Console.WriteLine("End of Stream");
@@ -221,5 +253,7 @@ namespace NotepadBufferParser
             newArray[0] = newByte;
             return newArray;
         }
+
+        
     }
 }
