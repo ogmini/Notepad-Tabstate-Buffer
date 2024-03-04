@@ -15,9 +15,17 @@ For now, I will be focusing on getting a better understanding of the underlying 
 
 ## Header
 
- - First 17 bytes are header information (Ignoring for now. First 2 bytes do always appear to be "NP")
+ - First 2 bytes are "NP"
+ - 3rd byte is unknown
+ - 4th byte appears to be flag for saved file
+ - Length of Filepath (Stored as an unsigned LEB128)
+ - Filepath as little-ending UTF-16
+ - Length of original content (Stored as an unsigned LEB128)
+ - Unknown possibly 52 bytes (Need to investigate)
+ - Content
+ - Unknown 5 bytes  
 
-## Chunk Format
+## Chunk Format for Unsaved Buffer
 
 [Cursor Position][Deletion][Addition][Unknown]
 - Cursor position (Stored as a unsigned LEB128)
