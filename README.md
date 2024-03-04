@@ -20,7 +20,8 @@ For now, I will be focusing on getting a better understanding of the underlying 
    - Cursor position (Stored as a unsigned LEB128)
    - Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
    - Addition Action (Stored as an unsigned LEB128 indicating how many characters to add)
-   - Other information dependant on the action such as character inserted
+     - Added characters are stored as little-endian UTF-16 
+   
   
 ### Addition Chunk
 
@@ -31,8 +32,8 @@ Below is an example of a chunk of bytes that represent the addition of the chara
 00 - unsigned LEB128 denoting position of 0  
 00 - 0 denotes no deletion  
 01 - 1 denotes addition of 1 character    
-61 - character 'a'  
-00 BB 06 C7 CC - Unknown, possibly a hash/CRC of the position and character?  
+61 00 - character 'a'  
+BB 06 C7 CC - Unknown, possibly a hash/CRC of the position and character?  
 
 Below is an example of a chunk of bytes that represent the addition of the character 'a' at position 17018.
 
@@ -40,8 +41,8 @@ Below is an example of a chunk of bytes that represent the addition of the chara
 FA 84 01 - unsigned LEB128 denoting position of 17018  
 00 - 0 denotes no deletion    
 01 - 1 denotes addition of 1 character      
-61 - character 'a'  
-00 98 07 F5 46 - Unknown, possibly a hash/CRC of the position and character?  
+61 00 - character 'a'  
+98 07 F5 46 - Unknown, possibly a hash/CRC of the position and character?  
 
 ### Deletion Chunk by using Backspace
 
