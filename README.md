@@ -11,14 +11,14 @@ There are different types of .bin files that appear to save the state of the var
 - saved file with unsaved changes stored only in buffer
 - others?
 
-For now, I will be focusing on getting a better understanding of the underlying structure for an unsaved tab with text.
+For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text.
 
 ## Known
 
  - First 17 bytes are header information (Ignoring for now. First 2 bytes do always appear to be "NP")
  - Proceeding these 17 bytes we have chunks of bytes that describe
    - Cursor position (Stored as a unsigned LEB128)
-   - Action (1 byte)
+   - Actions (2 bytes)
    - Other information dependant on the action such as character inserted
   
 ### Addition Chunk
@@ -28,8 +28,8 @@ Below is an example of a chunk of bytes that represent the addition of the chara
 ![Screenshot of Insertion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Insert-Chunk.png)
 
 00 - unsigned LEB128 denoting position of 0  
-00 - 0 denoting action of "Insertion"  
-01 - Unknown, possibly just a delimiter?   
+00 - 0 denotes no deletion  
+01 - 1 denotes addition  
 61 - character 'a'  
 00 BB 06 C7 CC - Unknown, possibly a hash/CRC of the position and character?  
 
@@ -37,8 +37,8 @@ Below is an example of a chunk of bytes that represent the addition of the chara
 
 ![Screenshot of Insertion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Insert-Chunk-2.png)
 FA 84 01 - unsigned LEB128 denoting position of 17018  
-00 - 0 denoting action of "Insertion"  
-01 - Unknown, possibly just a delimiter?  
+00 - 0 denotes no deletion    
+01 - 1 denotes addition    
 61 - character 'a'  
 00 98 07 F5 46 - Unknown, possibly a hash/CRC of the position and character?  
 
@@ -48,8 +48,9 @@ Below is an example of a chunk of bytes that represent deletion at a position 1.
 
 ![Screenshot of Deletion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Delete-Chunk.png)
 01 - unsigned LEB128 denoting position of 1  
-01 - 1 denoting action of "Deletion"  
-00 E7 98 82 64 - Unknown, possibly a hash/CRC of the position and action? 
+01 - 1 denotes deletion  
+00 - 0 denotes no addition  
+E7 98 82 64 - Unknown, possibly a hash/CRC of the position and action? Interesting this is now 4 bytes
 
 ### Deletion Chunk by using Delete
 
