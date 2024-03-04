@@ -83,7 +83,7 @@ Insertion chunk is a combination of the addition and deletion. This would occur 
 
 > WORK IN PROGRESS
 
-At the moment, this will only work on deciphering unsaved buffers. Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned.
+Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned.
 
 ![Example 1-1](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/screenshots/Example%201-1.png)
 ![Example 1-2](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/screenshots/Example%201-2.png)
