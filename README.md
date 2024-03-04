@@ -30,8 +30,8 @@ Below is an example of a chunk of bytes that represent the addition of the chara
 ![Screenshot of Insertion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Insert-Chunk.png)
 
 00 - unsigned LEB128 denoting position of 0  
-00 - 0 denotes no deletion  
-01 - 1 denotes addition of 1 character    
+00 - unsigned LEB128 denoting number of characters deleted  
+01 - unsigned LEB128 denoting number of characters added (In this case 1)     
 61 00 - character 'a'  
 BB 06 C7 CC - Unknown, possibly a hash/CRC of the position and character?  
 
@@ -39,8 +39,8 @@ Below is an example of a chunk of bytes that represent the addition of the chara
 
 ![Screenshot of Insertion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Insert-Chunk-2.png)
 FA 84 01 - unsigned LEB128 denoting position of 17018  
-00 - 0 denotes no deletion    
-01 - 1 denotes addition of 1 character      
+00 - unsigned LEB128 denoting number of characters deleted   
+01 - unsigned LEB128 denoting number of characters added (In this case 1)         
 61 00 - character 'a'  
 98 07 F5 46 - Unknown, possibly a hash/CRC of the position and character?  
 
@@ -50,8 +50,8 @@ Below is an example of a chunk of bytes that represent deletion at a position 1.
 
 ![Screenshot of Deletion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/Delete-Chunk.png)
 01 - unsigned LEB128 denoting position of 1  
-01 - 1 denotes deletion of 1 character    
-00 - 0 denotes no addition  
+01 - unsigned LEB128 denoting number of characters deleted (In this case 1)      
+00 - unsigned LEB128 denoting number of characters added   
 E7 98 82 64 - Unknown, possibly a hash/CRC of the position and action? Interesting this is now 4 bytes
 
 ### Deletion Chunk by using Delete
