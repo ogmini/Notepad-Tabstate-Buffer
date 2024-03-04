@@ -12,11 +12,9 @@ namespace NotepadBufferParser
     {
         static void Main(string[] args)
         {
-            //string fileName = "C:\\Users\\Reversing\\Desktop\\Copies\\8a547232-5156-490b-96d9-f9d48ec9c325.bin";
-            //string fileName = "C:\\Users\\Reversing\\Desktop\\Copies\\e893561e-87f3-4f6b-b1a3-5612df9c96c9.bin";
-            string f = "2.bin";
-            //83ac1000-f1ce-4e7d-9919-feb0bc0415c5.bin
-            string fileName = "C:\\Users\\Reversing\\Desktop\\Copies\\1\\" + f;
+            string f = "d.bin";
+            string fileName = @"C:\\Users\\Reversing\\Desktop\\Copies\\1\\" + f;
+
             using (var stream = File.OpenRead(fileName))
             {
                 using (var reader = new BinaryReader(stream))
@@ -30,31 +28,43 @@ namespace NotepadBufferParser
 
                         while (reader.BaseStream.Length > reader.BaseStream.Position)
                         {
-                            var charPos = ReadLEB128Unsigned(stream, out int nextByte); //Position encoded as unsigned LEB128
-                            var charAction = reader.ReadByte(); //TODO: Verify/expand on this
+                            var charPos = ReadLEB128Unsigned(stream, out int nextBytePos); 
+                            var charDeletion = ReadLEB128Unsigned(stream, out int nextByteDel);
+                            var charAddition = ReadLEB128Unsigned(stream, out int nextByteAdd);
 
-                            switch (charAction)
+                            //TODO: Clean this up. It is not optimal if/else
+                            if (charDeletion == 0 && charAddition > 0)
                             {
-                                case 0: //Insertion
-                                    var unknowndelim = reader.ReadByte(); //TODO: Determine what this is
-                                    var charByte = reader.ReadByte(); //ASCII 
-                                    var unknown = reader.ReadBytes(5); //TODO: Determine what this is
-                                    Console.WriteLine("Insertion at Position " + charPos.ToString() + " - Character " + ReadCharacter(charByte) + " | " + charByte.ToString("X2"));
-                                    break;
-                                case 1: //Deletion
-                                    var unknownDel = reader.ReadBytes(5); //TODO: Determine what this is
-                                    Console.WriteLine("Deletion at Position " + charPos.ToString());
-                                    break;
-                                default:
-                                    Console.WriteLine("Unknown Action - " + charAction.ToString());
-                                    break;
+                                for (int p = 0; p < (int)charAddition; p++)
+                                {
+                                    var bytesChar = reader.ReadBytes(2);
+                                    var str = Encoding.Unicode.GetString(bytesChar);
+
+                                    Console.WriteLine("Addition at Position " + ((int)charPos + p).ToString() + " - Character " + str + " | " + bytesChar[0].ToString("X2"));
+                                }
                             }
+                            else if (charDeletion > 0 && charAddition == 0)
+                            {
+                                Console.WriteLine("Deletion at Position " + charPos.ToString() + " for " + charDeletion.ToString() + " position(s)");
+                            }
+                            else if (charDeletion > 0 && charAddition > 0)
+                            {
+                                Console.WriteLine("Deletion at Position " + charPos.ToString() + " for " + charDeletion.ToString() + " position(s)");
+                                for (int p = 0; p < (int)charAddition; p++)
+                                {
+                                    var bytesChar = reader.ReadBytes(2);
+                                    var str = Encoding.Unicode.GetString(bytesChar);
 
-                            
+                                    Console.WriteLine("Insertion at Position " + ((int)charPos + p).ToString() + " - Character " + str + " | " + bytesChar[0].ToString("X2"));
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Uhh"); 
+                            }   
 
-                            
+                            var unKnown = reader.ReadBytes(4); //TODO: Determine what this is
                         }
-
                         Console.WriteLine("End of Stream");
                     }
                     else
