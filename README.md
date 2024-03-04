@@ -71,6 +71,8 @@ E7 98 82 64 - Unknown, possibly a hash/CRC of the position and action? Interesti
 
 ### Insertion Chunk
 
+Insertion chunk is a combination of the addition and deletion. This would occur if someone was to select text and paste new text into place.
+
 ## Open Questions
 
  - Breakdown of the header information
