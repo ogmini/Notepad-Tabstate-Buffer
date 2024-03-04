@@ -21,7 +21,9 @@ For now, I will be focusing on getting a better understanding of the underlying 
    - Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
    - Addition Action (Stored as an unsigned LEB128 indicating how many characters to add)
      - Added characters are stored as little-endian UTF-16 
-   
+
+## Chunk Format
+[Cursor Position][Deletion][Addition][Unknown]
   
 ### Addition Chunk
 
