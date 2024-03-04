@@ -1,10 +1,10 @@
 > WORK IN PROGRESS
 >
-> What you see here are ever evolving notes and changing code as a investigate the file format.
+> What you see here are ever evolving notes and changing code as I investigate the file format.
 
 # Notepad-Tabstate-Buffer
 
-These are my attempts to reverse engineer the Tabstate files for Notepad in Microsoft Windows 11. These files are located at: `%localappdata%\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState`
+These are my attempts to reverse engineer the Tabstate files for Notepad in Microsoft Windows 11.. These files are located at: `%localappdata%\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState`
 
 There are different types of .bin files that appear to save the state of the various tabs. These tabs could be:
 - unsaved with text stored only in buffer
