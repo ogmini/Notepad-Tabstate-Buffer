@@ -13,7 +13,7 @@ There are different types of .bin files that appear to save the state of the var
 
 For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text.
 
-## Header
+## File Format
 
  - First 2 bytes are "NP"
  - 3rd byte is unknown
@@ -21,9 +21,11 @@ For now, I will be focusing on getting a better understanding of the underlying 
  - Length of Filepath (Stored as an unsigned LEB128)
  - Filepath as little-ending UTF-16
  - Length of original content (Stored as an unsigned LEB128)
- - Unknown possibly 52 bytes (Need to investigate)
+ - Unknown appears to be 45 bytes followed by a delimiter (Need to investigate)
+   -  The 45 bytes seem to end with the bytes for the length of the original content twice, 01 00 00 00, and the lenght of the original content again. (Ex. 96 02 96 02 01 00 00 00 96 02 when the length of the original content was 96 02 or 278)
  - Content
- - Unknown 5 bytes  
+ - Unknown 5 bytes
+ - Unsaved Buffer Chunks
 
 ## Chunk Format for Unsaved Buffer
 
