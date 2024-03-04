@@ -18,7 +18,8 @@ For now, I will be focusing on getting a better understanding of the underlying 
  - First 17 bytes are header information (Ignoring for now. First 2 bytes do always appear to be "NP")
  - Proceeding these 17 bytes we have chunks of bytes that describe
    - Cursor position (Stored as a unsigned LEB128)
-   - Actions (2 bytes)
+   - Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
+   - Addition Action (TBD)
    - Other information dependant on the action such as character inserted
   
 ### Addition Chunk
