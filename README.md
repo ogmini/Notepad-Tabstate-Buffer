@@ -93,7 +93,9 @@ CD CD 85 6F - CRC 32 of previous bytes
 
 > WORK IN PROGRESS
 
-Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned.
+Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned. Some things I would like to implement.
+
+ - Some visual playback of actions taken from the unsaved buffer
 
 ![Example 1-1](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/screenshots/Example%201-1.png)
 ![Example 1-2](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/screenshots/Example%201-2.png)
