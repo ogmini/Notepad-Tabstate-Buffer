@@ -71,7 +71,17 @@ E7 98 82 64 - Unknown, possibly a hash/CRC of the position and action? Interesti
 
 ### Insertion Chunk
 
-Insertion chunk is a combination of the addition and deletion. This would occur if someone was to select text and paste new text into place.
+Insertion chunk is a combination of the addition and deletion. This would occur if someone was to select text and paste new text into place. Below is an example of a chunk of bytes that represent pasting 3 character 'b's over 3 character 'a's starting at position 1.
+
+![Screenshot of Insertion](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/screenshots/Insertion%20Chunk.png)
+
+01 - unsigned LEB128 denoting position 1
+03 - unsigned LEB128 denoting the number of characters deleted (In this case 3)
+03 - unsigned LEB128 denoting the number of characters added
+62 00 - character 'b'
+62 00 - character 'b'
+62 00 - character 'b'
+CD CD 85 6F - Unknown, possibly a hash/CRC of the position and action? Interesting this is now 4 bytes
 
 ## Open Questions
 
