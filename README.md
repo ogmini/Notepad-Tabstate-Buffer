@@ -35,7 +35,8 @@ For now, I will be focusing on getting a better understanding of the underlying 
 - Cursor position (Stored as a unsigned LEB128)
 - Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
 - Addition Action (Stored as an unsigned LEB128 indicating how many characters to add)
-  - Added characters are stored as little-endian UTF-16 
+  - Added characters are stored as little-endian UTF-16
+- Unknown 4 bytes
   
 ### Addition Chunk
 
