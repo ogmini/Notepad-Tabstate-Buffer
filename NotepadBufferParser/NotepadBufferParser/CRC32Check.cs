@@ -27,13 +27,17 @@ namespace NotepadBufferParser
             }
         }
 
+        public void AddBytes(ulong value)
+        {
+            AddBytes(LEB128Converter.WriteLEB128Unsigned(value));
+        }
+
         public bool Check(byte[] crc32)
         {
             var crc32calculated = Crc32.Hash(data.ToArray());
             Array.Reverse(crc32calculated);
 
             return crc32calculated.SequenceEqual(crc32);
-
         }
     }
 }

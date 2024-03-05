@@ -11,13 +11,14 @@ using System.Text.RegularExpressions;
 using CommandLine;
 
 
+
 namespace NotepadBufferParser
 {
     internal static class Program
     {
         public class Options
         {
-
+            
         }
         static void Main(string[] args)
         {
@@ -67,8 +68,8 @@ namespace NotepadBufferParser
                         {
                             CRC32Check c = new CRC32Check();
 
-                            var fPathLength = ReadLEB128Unsigned(stream); //Filepath string length
-                            c.AddBytes(WriteLEB128Unsigned(fPathLength));
+                            var fPathLength = LEB128Converter.ReadLEB128Unsigned(stream); //Filepath string length
+                            c.AddBytes(fPathLength);
 
                             var fPathBytes = reader.ReadBytes((int)fPathLength * 2);
                             c.AddBytes(fPathBytes);
@@ -76,11 +77,11 @@ namespace NotepadBufferParser
                             var fPath = Encoding.Unicode.GetString(fPathBytes);
                             Console.WriteLine("Original File Location: {0}", fPath);
 
-                            var fileContentLength = ReadLEB128Unsigned(stream); //Original Filecontent length
-                            c.AddBytes(WriteLEB128Unsigned(fileContentLength));
+                            var fileContentLength = LEB128Converter.ReadLEB128Unsigned(stream); //Original Filecontent length
+                            c.AddBytes(fileContentLength);
 
                             //TODO: YUCK. There is something more going on here...
-                            var delim = WriteLEB128Unsigned(fileContentLength); 
+                            var delim = LEB128Converter.WriteLEB128Unsigned(fileContentLength); 
                             var numBytes = (delim.Length * 1) + 8;
                             //end delimiter appears to be 00 01 00 00 01 00 00 00 fileContentLength
                             var un1 = reader.ReadBytes(43); //Unknown... This doesn't feel right
@@ -114,11 +115,11 @@ namespace NotepadBufferParser
                             var un1 = reader.ReadBytes(1); //TODO: Unknown 
                             c.AddBytes(un1);
 
-                            var fileContentLength = ReadLEB128Unsigned(stream);
-                            c.AddBytes(WriteLEB128Unsigned(fileContentLength));
+                            var fileContentLength = LEB128Converter.ReadLEB128Unsigned(stream);
+                            c.AddBytes(fileContentLength);
                             
 
-                            var delim = WriteLEB128Unsigned(fileContentLength);
+                            var delim = LEB128Converter.WriteLEB128Unsigned(fileContentLength);
                             var numBytes = (delim.Length * 2) + 4; //Why is this different from above 2 vs 3?? Something isn't right... I'd expect the same for both
                             var un2 = reader.ReadBytes(numBytes);
                             c.AddBytes(un2);
@@ -147,14 +148,14 @@ namespace NotepadBufferParser
                         {
                             CRC32Check c = new CRC32Check();
 
-                            var charPos = ReadLEB128Unsigned(stream);
-                            c.AddBytes(WriteLEB128Unsigned(charPos));
+                            var charPos = LEB128Converter.ReadLEB128Unsigned(stream);
+                            c.AddBytes(charPos);
                             
-                            var charDeletion = ReadLEB128Unsigned(stream);
-                            c.AddBytes(WriteLEB128Unsigned(charDeletion));
+                            var charDeletion = LEB128Converter.ReadLEB128Unsigned(stream);
+                            c.AddBytes(charDeletion);
 
-                            var charAddition = ReadLEB128Unsigned(stream);
-                            c.AddBytes(WriteLEB128Unsigned(charAddition));
+                            var charAddition = LEB128Converter.ReadLEB128Unsigned(stream);
+                            c.AddBytes(charAddition);
 
 
                             if (charDeletion > 0)
@@ -174,7 +175,7 @@ namespace NotepadBufferParser
 
                                     buffer.InsertRange(((int)charPos + p), str);
 
-                                    Console.WriteLine("{0} at Position {1}: Character {2} | {3}", charDeletion > 0 ? "Insertion" : "Addition", ((int)charPos + p).ToString(), new string(str), bytesChar[0].ToString("X2"));
+                                    Console.WriteLine("{0} at Position {1}: Character {2} | {3}", charDeletion > 0 ? "Insertion" : "Addition", ((int)charPos + p).ToString(), new string(str), BytestoString(bytesChar));
                                 }
                             }
 
@@ -191,87 +192,17 @@ namespace NotepadBufferParser
                 }
             }
         }
-        private static string ReadCharacter(byte charByte)
+
+        private static string BytestoString(byte[] bytes)
         {
-            char c = Convert.ToChar(charByte);
-            if (char.IsWhiteSpace(c))
+            string retVal = string.Empty;
+
+            foreach (byte b in bytes)
             {
-                return "0x" + charByte.ToString("X2");
-            }
-            else
-            {
-                return c.ToString();
+                retVal += String.Format("0x{0} ", b.ToString("X2"));
             }
 
-            //TODO: Shit way of doing this
-            //switch(chunk[3])
-            //{
-            //    case 13:
-            //        charFound = "New Line";
-            //        break;
-            //    case 32:
-            //        charFound = "Space";
-            //        break;
-            //    default:
-            //        charFound = Convert.ToChar(chunk[3]).ToString();
-            //        break;
-            //}
-
-            // 13 ius new line
-            //32 is space
-        }
-
-        private static ulong ReadLEB128Unsigned(this Stream stream)
-        {
-            ulong value = 0;
-            int shift = 0;
-            bool more = true;
-
-            while (more)
-            {
-                var next = stream.ReadByte();
-                if (next < 0) { throw new InvalidOperationException("Unexpected end of stream"); }
-
-                byte b = (byte)next;
-
-                more = (b & 0x80) != 0;   // extract msb
-                ulong chunk = b & 0x7fUL; // extract lower 7 bits
-                value |= chunk << shift;
-                shift += 7;
-            }
-
-            return value;
-        }
-
-        private static byte[] WriteLEB128Unsigned(ulong value)
-        {
-            byte[] bArray = new byte[0];
-
-            bool more = true;
-
-            while (more)
-            {
-                byte chunk = (byte)(value & 0x7fUL); // extract a 7-bit chunk
-                value >>= 7;
-
-                more = value != 0;
-                if (more) { chunk |= 0x80; } // set msb marker that more bytes are coming
-
-                bArray = AddByteToArray(bArray, chunk);
-                
-            };
-
-            Array.Reverse(bArray);
-
-            return bArray;
-        }
-
-        private static byte[] AddByteToArray(byte[] bArray, byte newByte)
-        {
-            byte[] newArray = new byte[bArray.Length + 1];
-            bArray.CopyTo(newArray, 1);
-            newArray[0] = newByte;
-            return newArray;
+            return retVal;
         }
     }
 }
