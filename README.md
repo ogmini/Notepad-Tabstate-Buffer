@@ -59,7 +59,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
  - Unknown 1 byte
    - Possibly a NULL as a delimiter
  - CRC 32 of the all previous bytes starting from the 3rd byte 
- - [Unsaved Buffer Chunks](#Chunk Format for Unsaved Buffer)
+ - Unsaved Buffer Chunks
 
 ### Unsaved Tab
 
