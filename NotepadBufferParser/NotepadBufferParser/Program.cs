@@ -16,15 +16,15 @@ namespace NotepadBufferParser
         static void Main(string[] args)
         {
             //TODO: Grab copies and parse them.
-
-            string folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState";
             Console.WriteLine("********** Starting *********");
+            string folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState";
             string pwd = Directory.GetCurrentDirectory();
 
-            Console.WriteLine("Copying files from: {0}", folder);
+            Console.WriteLine("Copying files from: {0} to {1}", folder, pwd);
             foreach (var path in Directory.EnumerateFiles(folder ,"*.bin"))
             {
-                File.Copy(path, pwd + @"\" + Path.GetFileName(path), true); //TODO: Make flag for overwriting
+                if (!Path.GetFileNameWithoutExtension(path).EndsWith(".0") && !Path.GetFileNameWithoutExtension(path).EndsWith(".1")) //Shitty, use REGEX or something
+                    File.Copy(path, pwd + @"\" + Path.GetFileName(path), true); //TODO: Make flag for overwriting
             }
 
             foreach (var path in Directory.EnumerateFiles(pwd, "*.bin"))
@@ -74,7 +74,17 @@ namespace NotepadBufferParser
                         else if (!isFile) //Unsaved Tab
                         { 
                             Console.WriteLine("Unsaved Tab: {0}", Path.GetFileName(filePath));
-                            byte[] hdr = reader.ReadBytes(13); //TODO: Unknown
+                            //TODO: YUCK
+                            reader.ReadBytes(1); //TODO: Unknown
+                            var fileContentLength = ReadLEB128Unsigned(stream);
+                            var delim = WriteLEB128Unsigned(fileContentLength);
+                            var numBytes = (delim.Length * 2) + 4;
+                            reader.ReadBytes(numBytes);
+
+                            string originalContent = Encoding.Unicode.GetString(reader.ReadBytes((int)fileContentLength * 2));
+                            Console.WriteLine("Original Content: {0}", originalContent);
+                            reader.ReadBytes(1); //TODO: Unknown 
+                            reader.ReadBytes(4); //TODO: CRC 32 
                         }
                         else
                         {
