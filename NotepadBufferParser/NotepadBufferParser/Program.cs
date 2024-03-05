@@ -8,33 +8,43 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Hashing;
 using System.Text.RegularExpressions;
+using CommandLine;
 
 
 namespace NotepadBufferParser
 {
     internal static class Program
     {
+        public class Options
+        {
+
+        }
         static void Main(string[] args)
         {
-            //TODO: Grab copies and parse them.
-            Console.WriteLine("********** Starting *********");
-            string folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState";
-            string pwd = Directory.GetCurrentDirectory();
-
-            Console.WriteLine("Copying files from: {0} to {1}", folder, pwd);
-            foreach (var path in Directory.EnumerateFiles(folder ,"*.bin"))
+            Parser.Default.ParseArguments<Options>(args).WithParsed<Options>(o =>
             {
-                if (!Path.GetFileNameWithoutExtension(path).EndsWith(".0") && !Path.GetFileNameWithoutExtension(path).EndsWith(".1")) //Shitty, use REGEX or something. OR just learn to parse these
-                    File.Copy(path, pwd + @"\" + Path.GetFileName(path), true); //TODO: Make flag for overwriting
-            }
+                //TODO: Grab copies and parse them.
+                Console.WriteLine("********** Starting *********");
+                string folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState";
+                string pwd = Directory.GetCurrentDirectory();
 
-            foreach (var path in Directory.EnumerateFiles(pwd, "*.bin"))
-            {
-                ParseFile(path);
-            }
+                Console.WriteLine("Copying files from: {0} to {1}", folder, pwd);
+                foreach (var path in Directory.EnumerateFiles(folder, "*.bin"))
+                {
+                    if (!Path.GetFileNameWithoutExtension(path).EndsWith(".0") && !Path.GetFileNameWithoutExtension(path).EndsWith(".1")) //Shitty, use REGEX or something. OR just learn to parse these
+                        File.Copy(path, pwd + @"\" + Path.GetFileName(path), true); //TODO: Make flag for overwriting
+                }
 
-            Console.WriteLine("********** Completed **********");
-            Console.ReadLine();
+                foreach (var path in Directory.EnumerateFiles(pwd, "*.bin"))
+                {
+                    ParseFile(path);
+                }
+
+                Console.WriteLine("********** Completed **********");
+                Console.ReadLine();
+
+            });
+            
         }
         private static void ParseFile(string filePath)
         {
@@ -146,67 +156,28 @@ namespace NotepadBufferParser
                             var charAddition = ReadLEB128Unsigned(stream);
                             c.AddBytes(WriteLEB128Unsigned(charAddition));
 
-                            //TODO: This might be cleaner than below code. But no distinction between Addition/Deletion/Insertion
-                            //if (charDeletion > 0)
-                            //{
-                            //    Console.WriteLine("Deletion at Position " + charPos.ToString() + " for " + charDeletion.ToString() + " position(s)");
-                            //}
 
-                            //if (charAddition > 0)
-                            //{
-                            //    for (int p = 0; p < (int)charAddition; p++)
-                            //    {
-                            //        var bytesChar = reader.ReadBytes(2);
-                            //        var str = Encoding.Unicode.GetString(bytesChar);
-
-                            //        Console.WriteLine("Addition at Position " + ((int)charPos + p).ToString() + " - Character " + str + " | " + bytesChar[0].ToString("X2"));
-                            //    }
-                            //}
-
-
-                            if (charDeletion == 0 && charAddition > 0)
-                            {
-                                for (int p = 0; p < (int)charAddition; p++)
-                                {
-                                    var bytesChar = reader.ReadBytes(2);
-                                    c.AddBytes(bytesChar);
-
-                                    var str = Encoding.Unicode.GetChars(bytesChar);
-
-                                    buffer.InsertRange(((int)charPos + p), str);
-
-                                    Console.WriteLine("Addition at Position {0}: Character {1} | {2}", ((int)charPos + p).ToString(), new string(str), bytesChar[0].ToString("X2"));
-                                }
-                            }
-                            else if (charDeletion > 0 && charAddition == 0)
+                            if (charDeletion > 0)
                             {
                                 buffer.RemoveRange((int)charPos, (int)charDeletion);
 
                                 Console.WriteLine("Deletion at Position {0} for {1} position(s)", charPos.ToString(), charDeletion.ToString());
                             }
-                            else if (charDeletion > 0 && charAddition > 0)
-                            {
-                                buffer.RemoveRange((int)charPos, (int)charDeletion);
 
-                                Console.WriteLine("Deletion at Position {0} for {1} position(s)", charPos.ToString(), charDeletion.ToString());
+                            if (charAddition > 0)
+                            {
                                 for (int p = 0; p < (int)charAddition; p++)
                                 {
                                     var bytesChar = reader.ReadBytes(2);
                                     c.AddBytes(bytesChar);
-
                                     var str = Encoding.Unicode.GetChars(bytesChar);
 
                                     buffer.InsertRange(((int)charPos + p), str);
 
-                                    Console.WriteLine("Insertion at Position {1}: Character {2} | {3}", charDeletion > 0 ? "Insertion" : "Addition" ,((int)charPos + p).ToString(), new string(str), bytesChar[0].ToString("X2"));
+                                    Console.WriteLine("{0} at Position {1}: Character {2} | {3}", charDeletion > 0 ? "Insertion" : "Addition", ((int)charPos + p).ToString(), new string(str), bytesChar[0].ToString("X2"));
                                 }
                             }
-                            else
-                            {
-                                Console.WriteLine("Uhh");
-                            }
 
-       
                             Console.WriteLine("Chunk CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); //CRC32
                             Console.WriteLine(String.Join("", buffer));
                         }
