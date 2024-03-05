@@ -57,6 +57,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Length of original content AGAIN (Stored as an unsigned LEB128)
  - Content
  - Unknown 1 byte
+   - Possibly a NULL as a delimiter
  - CRC 32 of the all previous bytes starting from the 3rd byte 
  - Unsaved Buffer Chunks
 
@@ -116,8 +117,10 @@ CD CD 85 6F - CRC 32 of previous bytes
 
 ## Open Questions
 
- - Breakdown of the header information
- - Unknown bytes
+ - What is up with the weird delimiter in Unsaved Tab Format?
+ - What are the 43 unknown bytes in the File Tab Format?
+ - Why are Unsaved Tab and File Tab Format different?
+ - Random single bytes?
  - Are the 0.bin and 1.bin just backups?
  - What other actions are there?
 
