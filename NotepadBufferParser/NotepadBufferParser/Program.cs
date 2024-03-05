@@ -57,28 +57,31 @@ namespace NotepadBufferParser
                             Console.WriteLine("Original File Location: {0}", fPath);
 
                             var fileContentLength = ReadLEB128Unsigned(stream); //Original Filecontent length
-
-                            //TODO: YUCK
+                            Console.WriteLine(reader.BaseStream.Position.ToString());
+                            //TODO: YUCK. There is something more going on here...
                             var delim = WriteLEB128Unsigned(fileContentLength); 
-                            var numBytes = (delim.Length * 3) + 4;
-                            //end delimiter appears to be fileContentLength 01 00 00 00 fileContentLength
-                            reader.ReadBytes(45); //Unknown... This doesn't feel right
+                            var numBytes = (delim.Length * 1) + 8;
+                            //end delimiter appears to be 00 01 00 00 01 00 00 00 fileContentLength
+                            reader.ReadBytes(43); //Unknown... This doesn't feel right
+                            Console.WriteLine(reader.BaseStream.Position.ToString());
                             reader.ReadBytes(numBytes); //Unknown maybe delimiter??? Appears to be the Unsigned LEB128 fileContentLength twice, followed by 01 00 00 00 and the fileContentLength
-
+                            Console.WriteLine(reader.BaseStream.Position.ToString());
                             string originalContent = Encoding.Unicode.GetString(reader.ReadBytes((int)fileContentLength * 2));
                             Console.WriteLine("Original Content: {0}", originalContent);
 
                             reader.ReadBytes(1); //TODO: Unknown 
                             reader.ReadBytes(4); //TODO: CRC 32 
+                            
                         }
                         else if (!isFile) //Unsaved Tab
                         { 
                             Console.WriteLine("Unsaved Tab: {0}", Path.GetFileName(filePath));
-                            //TODO: YUCK
+
+                            //TODO: YUCK. There is something more going on here...
                             reader.ReadBytes(1); //TODO: Unknown
                             var fileContentLength = ReadLEB128Unsigned(stream);
                             var delim = WriteLEB128Unsigned(fileContentLength);
-                            var numBytes = (delim.Length * 2) + 4;
+                            var numBytes = (delim.Length * 2) + 4; //Why is this different from above 2 vs 3?? Something isn't right... I'd expect the same for both
                             reader.ReadBytes(numBytes);
 
                             string originalContent = Encoding.Unicode.GetString(reader.ReadBytes((int)fileContentLength * 2));
