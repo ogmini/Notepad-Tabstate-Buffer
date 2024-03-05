@@ -67,6 +67,7 @@ namespace NotepadBufferParser
                         if (isFile) //Saved file
                         {
                             CRC32Check c = new CRC32Check();
+                            c.AddBytes(0x01);
 
                             var fPathLength = LEB128Converter.ReadLEB128Unsigned(stream); //Filepath string length
                             c.AddBytes(fPathLength);
@@ -102,7 +103,7 @@ namespace NotepadBufferParser
                             var un3 = reader.ReadBytes(1); //TODO: Unknown 
                             c.AddBytes(un3);
 
-                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); //CRC32
+                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); 
 
                         }
                         else if (!isFile) //Unsaved Tab
@@ -110,6 +111,7 @@ namespace NotepadBufferParser
                             Console.WriteLine("Unsaved Tab: {0}", Path.GetFileName(filePath));
 
                             CRC32Check c = new CRC32Check();
+                            c.AddBytes(0x00);
 
                             //TODO: YUCK. There is something more going on here...
                             var un1 = reader.ReadBytes(1); //TODO: Unknown 
@@ -134,11 +136,11 @@ namespace NotepadBufferParser
                             var un3 = reader.ReadBytes(1); //TODO: Unknown 
                             c.AddBytes(un3);
 
-                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); //CRC32
+                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); 
                         }
                         else
                         {
-                            Console.WriteLine("Uhh");
+                            Console.WriteLine("Uhh - Detected an unknown flag at 4th byte for isFile");
                         }
 
                         if (reader.BaseStream.Length > reader.BaseStream.Position)
@@ -174,12 +176,13 @@ namespace NotepadBufferParser
                                     var str = Encoding.Unicode.GetChars(bytesChar);
 
                                     buffer.InsertRange(((int)charPos + p), str);
-
+                                    
+                                    //Should we really make a differentiation between Insertion and Addition. It makes no difference to the buffer view
                                     Console.WriteLine("{0} at Position {1}: Character {2} | {3}", charDeletion > 0 ? "Insertion" : "Addition", ((int)charPos + p).ToString(), new string(str), BytestoString(bytesChar));
                                 }
                             }
 
-                            Console.WriteLine("Chunk CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); //CRC32
+                            Console.WriteLine("Chunk CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); 
                             Console.WriteLine(String.Join("", buffer));
                         }
 
