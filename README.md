@@ -24,6 +24,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
    - Possibly a NULL as a delimiter
  - 4th byte appears to be flag for saved file
  - Length of Filepath (Stored as an unsigned LEB128)
+   - May be used for something else when not a saved file?
  - Filepath as little-ending UTF-16
  - Length of original content (Stored as an unsigned LEB128)
    - Followed by 05 01?
