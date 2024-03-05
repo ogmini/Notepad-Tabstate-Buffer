@@ -55,52 +55,33 @@ namespace NotepadBufferParser
 
                         if (isFile) //Saved file
                         {
-                            List<byte> crc32Check = new List<byte>();
-                            crc32Check.Add(0x01);
+                            CRC32Check c = new CRC32Check();
 
                             var fPathLength = ReadLEB128Unsigned(stream); //Filepath string length
-                            foreach (byte b in WriteLEB128Unsigned(fPathLength))
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(WriteLEB128Unsigned(fPathLength));
 
                             var fPathBytes = reader.ReadBytes((int)fPathLength * 2);
-                            foreach (byte b in fPathBytes)
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(fPathBytes);
 
                             var fPath = Encoding.Unicode.GetString(fPathBytes);
                             Console.WriteLine("Original File Location: {0}", fPath);
 
                             var fileContentLength = ReadLEB128Unsigned(stream); //Original Filecontent length
-                            foreach (byte b in WriteLEB128Unsigned(fileContentLength))
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(WriteLEB128Unsigned(fileContentLength));
 
                             //TODO: YUCK. There is something more going on here...
                             var delim = WriteLEB128Unsigned(fileContentLength); 
                             var numBytes = (delim.Length * 1) + 8;
                             //end delimiter appears to be 00 01 00 00 01 00 00 00 fileContentLength
                             var un1 = reader.ReadBytes(43); //Unknown... This doesn't feel right
-                            foreach (byte b in un1)
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(un1);
 
 
                             var un2 = reader.ReadBytes(numBytes); //Unknown maybe delimiter??? Appears to be the Unsigned LEB128 fileContentLength twice, followed by 01 00 00 00 and the fileContentLength
-                            foreach (byte b in un2)
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(un2);
 
                             var originalContentBytes = reader.ReadBytes((int)fileContentLength * 2);
-                            foreach (byte b in originalContentBytes)
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(originalContentBytes);
 
                             var originalContent = Encoding.Unicode.GetChars(originalContentBytes);
                             buffer.InsertRange(0, originalContent);
@@ -108,70 +89,41 @@ namespace NotepadBufferParser
                             Console.WriteLine("Original Content: {0}", new string(originalContent));
 
                             var un3 = reader.ReadBytes(1); //TODO: Unknown 
-                            foreach (byte b in un3)
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(un3);
 
-                            var crc32calculated = Crc32.Hash(crc32Check.ToArray());
-                            Array.Reverse(crc32calculated);
-
-                            var crc32 = reader.ReadBytes(4); //CRC 32 
-
-                            Console.WriteLine("CRC Match: {0}", crc32calculated.SequenceEqual(crc32) ? "PASS" : "FAIL");
+                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); //CRC32
 
                         }
                         else if (!isFile) //Unsaved Tab
                         { 
                             Console.WriteLine("Unsaved Tab: {0}", Path.GetFileName(filePath));
 
-                            List<byte> crc32Check = new List<byte>();
-                            crc32Check.Add(0x00);
+                            CRC32Check c = new CRC32Check();
 
                             //TODO: YUCK. There is something more going on here...
                             var un1 = reader.ReadBytes(1); //TODO: Unknown 
-                            foreach (byte b in un1)
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(un1);
 
                             var fileContentLength = ReadLEB128Unsigned(stream);
-                            foreach (byte b in WriteLEB128Unsigned(fileContentLength))
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(WriteLEB128Unsigned(fileContentLength));
+                            
 
                             var delim = WriteLEB128Unsigned(fileContentLength);
                             var numBytes = (delim.Length * 2) + 4; //Why is this different from above 2 vs 3?? Something isn't right... I'd expect the same for both
                             var un2 = reader.ReadBytes(numBytes);
-                            foreach (byte b in un2)
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(un2);
 
                             var originalContentBytes = reader.ReadBytes((int)fileContentLength * 2);
-                            foreach (byte b in originalContentBytes)
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(originalContentBytes);
 
                             var originalContent = Encoding.Unicode.GetChars(originalContentBytes);
                             buffer.InsertRange(0, originalContent);
 
                             Console.WriteLine("Original Content: {0}", new string(originalContent));
                             var un3 = reader.ReadBytes(1); //TODO: Unknown 
-                            foreach (byte b in un3)
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(un3);
 
-
-                            var crc32calculated = Crc32.Hash(crc32Check.ToArray());
-                            Array.Reverse(crc32calculated);
-
-                            var crc32 = reader.ReadBytes(4); //CRC 32 
-
-                            Console.WriteLine("CRC Match: {0}", crc32calculated.SequenceEqual(crc32) ? "PASS" : "FAIL");
+                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); //CRC32
                         }
                         else
                         {
@@ -183,23 +135,16 @@ namespace NotepadBufferParser
 
                         while (reader.BaseStream.Length > reader.BaseStream.Position)
                         {
-                            List<byte> crc32Check = new List<byte>();
+                            CRC32Check c = new CRC32Check();
 
                             var charPos = ReadLEB128Unsigned(stream);
-                            foreach (byte b in WriteLEB128Unsigned(charPos))
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(WriteLEB128Unsigned(charPos));
+                            
                             var charDeletion = ReadLEB128Unsigned(stream);
-                            foreach (byte b in WriteLEB128Unsigned(charDeletion))
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(WriteLEB128Unsigned(charDeletion));
+
                             var charAddition = ReadLEB128Unsigned(stream);
-                            foreach (byte b in WriteLEB128Unsigned(charAddition))
-                            {
-                                crc32Check.Add(b);
-                            }
+                            c.AddBytes(WriteLEB128Unsigned(charAddition));
 
                             //TODO: This might be cleaner than below code. But no distinction between Addition/Deletion/Insertion
                             //if (charDeletion > 0)
@@ -224,11 +169,8 @@ namespace NotepadBufferParser
                                 for (int p = 0; p < (int)charAddition; p++)
                                 {
                                     var bytesChar = reader.ReadBytes(2);
-                                    foreach (byte b in bytesChar)
-                                    {
-                                        crc32Check.Add(b);
-                                    }
-                                    
+                                    c.AddBytes(bytesChar);
+
                                     var str = Encoding.Unicode.GetChars(bytesChar);
 
                                     buffer.InsertRange(((int)charPos + p), str);
@@ -250,15 +192,13 @@ namespace NotepadBufferParser
                                 for (int p = 0; p < (int)charAddition; p++)
                                 {
                                     var bytesChar = reader.ReadBytes(2);
-                                    foreach (byte b in bytesChar)
-                                    {
-                                        crc32Check.Add(b);
-                                    }
+                                    c.AddBytes(bytesChar);
+
                                     var str = Encoding.Unicode.GetChars(bytesChar);
 
                                     buffer.InsertRange(((int)charPos + p), str);
 
-                                    Console.WriteLine("Insertion at Position {0}: Character {1} | {2}", ((int)charPos + p).ToString(), new string(str), bytesChar[0].ToString("X2"));
+                                    Console.WriteLine("Insertion at Position {1}: Character {2} | {3}", charDeletion > 0 ? "Insertion" : "Addition" ,((int)charPos + p).ToString(), new string(str), bytesChar[0].ToString("X2"));
                                 }
                             }
                             else
@@ -266,13 +206,8 @@ namespace NotepadBufferParser
                                 Console.WriteLine("Uhh");
                             }
 
-                            var crc32calculated = Crc32.Hash(crc32Check.ToArray());
-                            Array.Reverse(crc32calculated);
-                            
-                            var crc32 = reader.ReadBytes(4); //CRC 32 
-
-                            Console.WriteLine("CRC Match: {0}", crc32calculated.SequenceEqual(crc32) ? "PASS" : "FAIL");
-
+       
+                            Console.WriteLine("Chunk CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); //CRC32
                             Console.WriteLine(String.Join("", buffer));
                         }
 
@@ -367,7 +302,5 @@ namespace NotepadBufferParser
             newArray[0] = newByte;
             return newArray;
         }
-
-        
     }
 }
