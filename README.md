@@ -86,7 +86,8 @@ CD CD 85 6F - CRC 32 of previous bytes
 ## Open Questions
 
  - Breakdown of the header information
- - Unknown bytes 
+ - Unknown bytes
+ - Are the 0.bin and 1.bin just backups?
  - What other actions are there?
 
 ## Application
