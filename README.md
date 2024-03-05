@@ -29,7 +29,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
    - Followed by 05 01?
    - Random Bytes
      - 43 for a saved file on disk 
-   - 00 01 00 00 01 00 00 00 bytes for lenght of original content as LEB128 again
+   - 00 01 00 00 01 00 00 00 + bytes for length of original content as LEB128 again
  - ~~Unknown appears to be 45 bytes followed by a delimiter (Need to investigate. Below is definitely not exactly right)~~
    -  ~~The 45 bytes seem to end with the bytes for the length of the original content twice, 01 00 00 00, and the length of the original content again. (Ex. 96 02 96 02 01 00 00 00 96 02 when the length of the original content was 96 02 or 278)~~
  - Content
