@@ -26,7 +26,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
    -  The 45 bytes seem to end with the bytes for the length of the original content twice, 01 00 00 00, and the lenght of the original content again. (Ex. 96 02 96 02 01 00 00 00 96 02 when the length of the original content was 96 02 or 278)
  - Content
  - Unknown 5 bytes
-   - Possibly a NULL followed by 4 bytes (These appear to be CRC-32)
+   - Possibly a NULL followed by 4 bytes (These are most likely CRC 32. The question is of what.)
  - Unsaved Buffer Chunks
 
 ## Chunk Format for Unsaved Buffer
@@ -93,7 +93,9 @@ CD CD 85 6F - CRC 32 of previous bytes
 
 > WORK IN PROGRESS
 
-Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned.
+Expect this to change drastically over time. A lot is hardcoded and messy. You have been warned. Some things I would like to implement.
+
+ - Some visual playback of actions taken from the unsaved buffer
 
 ![Example 1-1](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/screenshots/Example%201-1.png)
 ![Example 1-2](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/screenshots/Example%201-2.png)
