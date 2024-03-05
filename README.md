@@ -13,6 +13,10 @@ There are different types of .bin files that appear to save the state of the var
 
 For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text. I have not attacked the 0.bin and 1.bin files.
 
+## Overall Behavior
+
+
+
 ## File Format
 
  - First 2 bytes are "NP"
