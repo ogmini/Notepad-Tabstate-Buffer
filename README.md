@@ -33,7 +33,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
     - On subsequent open/close of Notepad it will create an associated bin, 0.bin, and 1.bin. (Existing Tab Behavior)  
   - Opened file tab with unsaved changes will create an associated bin.
     - On subsequent open/close of Notepad it will create an associated bin, 0.bin, and 1.bin. (Existing Tab Behavior)
-  - Existing tab will create an associated bin, 0.bin, and 1.bin.
+  - Existing tab fi viewed will create an associated bin, 0.bin, and 1.bin.
 - No bin files indicate having never opened Notepad or closed all tab(s) manually.
 
 > WORK IN PROGRESS
@@ -92,6 +92,9 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
 - First 2 bytes are "NP"
 - Sequence number (Stored as an unsigned LEB128) 
 - Unknown bytes
+  - "4th" byte 09 or 08 (File on disk vs unsaved tab)
+  - Varible chunk seen 4 and 5 bytes 
+  - 01 00 00 00 before CRC
 - CRC 32 of all the previous bytes starting from the 3rd byte
 
 ## Chunk Format for Unsaved Buffer
