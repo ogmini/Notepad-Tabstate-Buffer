@@ -15,7 +15,7 @@ For now, I will be focusing on getting a better understanding of the underlying 
 
 # Acknowledgements
 
-[NordGaren](https://github.com/Nordgaren) for the inspiration to take a look at this when I saw his [tabstate-util](https://github.com/Nordgaren/tabstate-util)
+[NordGaren](https://github.com/Nordgaren) for the inspiration to take a look at this when I saw his [tabstate-util](https://github.com/Nordgaren/tabstate-util)   
 [JustArion](https://github.com/JustArion) for pointing out the Selection Index 
 
 
