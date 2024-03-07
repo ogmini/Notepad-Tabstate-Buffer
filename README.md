@@ -52,7 +52,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Content
  - Unknown 1 byte
    - Possibly a NULL as a delimiter
- - CRC 32 of the all previous bytes starting from the 3rd byte 
+ - CRC 32 of all the previous bytes starting from the 3rd byte 
  - Unsaved Buffer Chunks
 
 ### Unsaved Tab
@@ -70,8 +70,16 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Content
  - Unknown 1 byte
    - Possibly a NULL as a delimiter
- - CRC 32 of the all previous bytes starting from the 3rd byte 
+ - CRC 32 of all the previous bytes starting from the 3rd byte 
  - Unsaved Buffer Chunks
+
+### 0.bin / 1.bin
+
+- First 2 bytes are "NP"
+- 3rd byte might reference the bin number. (00 for 0.bin and 01 for 1.bin)
+- 4th byte 09 (Need more testing)
+- 14 Unknown Bytes
+- CRC 32 of all the previous bytes starting from the 3rd byte
 
 ## Chunk Format for Unsaved Buffer
 
