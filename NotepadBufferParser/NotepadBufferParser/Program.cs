@@ -92,11 +92,11 @@ namespace NotepadBufferParser
                             
                             var un2 = reader.ReadBytes(2); //Unknown maybe delimiter??? Appears to be 00 01 00 00, followed by 01 00 00 00, and the fileContentLength
                             c.AddBytes(un2);
-                            var selectionIndex = reader.BaseStream.ReadLEB128Unsigned();
-                            c.AddBytes(selectionIndex);
-                            var selectionLength = reader.BaseStream.ReadLEB128Unsigned();
-                            c.AddBytes(selectionLength);
-                            var un3 = reader.ReadBytes(4);
+                            var selectionStartIndex = reader.BaseStream.ReadLEB128Unsigned();
+                            c.AddBytes(selectionStartIndex);
+                            var selectionEndIndex = reader.BaseStream.ReadLEB128Unsigned();
+                            c.AddBytes(selectionEndIndex);
+                            var un3 = reader.ReadBytes(4); // 01 00 00 00
                             c.AddBytes(un3);
                             //95 03 05 01 F8 E3 AC C5 87 E6 9B ED 01 ED E9 78 0A 41 0D 40 B2 F2 68 3B BF E8 BC B0 F8 27 84 08 38 C1 84 5C D4 1A BC AA 0E 87 F6 AB B1 00 01 00 00 01 00 00 00 95 03
 
@@ -115,10 +115,10 @@ namespace NotepadBufferParser
 
                             Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL");
 
-                            if (selectionIndex != selectionLength)
+                            if (selectionStartIndex != selectionEndIndex)
                             {
-                                var segment = new ArraySegment<char>(originalContent, (int)selectionIndex, (int)selectionLength);
-                                Console.WriteLine("Selected text: {0}", new string(segment.Array));
+                                var segment = new ArraySegment<char>(originalContent, (int)selectionStartIndex, (int)selectionEndIndex - (int)selectionStartIndex);
+                                Console.WriteLine("Selected text: {0}", new string(segment.ToArray()));
                             }
 
                         }
