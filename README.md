@@ -37,9 +37,9 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Length of original content (Stored as an unsigned LEB128)
  - 43 Unknown Bytes (Seemingly starting with 05 01)
  - Delimiter of 00 01?
- - Selection Start Index on save (Stored as an unsigned LEB128) (Thanks ![JustArion](https://github.com/JustArion) for pointing this out)
+ - Selection Start Index on save (Stored as an unsigned LEB128) (Thanks [JustArion](https://github.com/JustArion) for pointing this out)
    - I don't think this will extend to the Unsaved tab as this seems to only show up on Save 
- - Selection End Index on save (Stored as an unsigned LEB128) (Thanks ![JustArion](https://github.com/JustArion) for pointing this out)
+ - Selection End Index on save (Stored as an unsigned LEB128) (Thanks [JustArion](https://github.com/JustArion) for pointing this out)
    - I don't think this will extend to the Unsaved tab as this seems to only show up on Save     
  - Delimiter of 01 00 00 00?
  - Length of original content (Stored as an unsigned LEB128)
