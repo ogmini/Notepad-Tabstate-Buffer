@@ -13,6 +13,12 @@ There are different types of .bin files that appear to save the state of the var
 
 For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text. I have not attacked the 0.bin and 1.bin files.
 
+# Acknowledgements
+
+[NordGaren](https://github.com/Nordgaren) for the inspiration to take a look at this when I saw his [tabstate-util](https://github.com/Nordgaren/tabstate-util)
+[JustArion](https://github.com/JustArion) for pointing out the Selection Index 
+
+
 ## Overall Behavior
 
 > WORK IN PROGRESS
