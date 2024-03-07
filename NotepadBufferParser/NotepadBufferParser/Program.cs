@@ -85,17 +85,19 @@ namespace NotepadBufferParser
                             c.AddBytes(fileContentLength);
 
                             //TODO: YUCK. There is something more going on here...
-                            var delim = LEB128Converter.WriteLEB128Unsigned(fileContentLength); 
                             //end delimiter appears to be 00 01 00 00 01 00 00 00 fileContentLength
                             var un1 = reader.ReadBytes(43); //Unknown... This doesn't feel right???
                             c.AddBytes(un1);
                             
-                            var un2 = reader.ReadBytes(2); //Unknown maybe delimiter??? Appears to be 00 01 00 00, followed by 01 00 00 00, and the fileContentLength
+                            var un2 = reader.ReadBytes(2); //Unknown maybe delimiter??? Appears to be 00 01 
                             c.AddBytes(un2);
                             var selectionStartIndex = reader.BaseStream.ReadLEB128Unsigned();
                             c.AddBytes(selectionStartIndex);
                             var selectionEndIndex = reader.BaseStream.ReadLEB128Unsigned();
                             c.AddBytes(selectionEndIndex);
+
+                            Console.WriteLine("Selection Index {0} to {1}", selectionStartIndex, selectionEndIndex);
+
                             var un3 = reader.ReadBytes(4); // 01 00 00 00
                             c.AddBytes(un3);
                             //95 03 05 01 F8 E3 AC C5 87 E6 9B ED 01 ED E9 78 0A 41 0D 40 B2 F2 68 3B BF E8 BC B0 F8 27 84 08 38 C1 84 5C D4 1A BC AA 0E 87 F6 AB B1 00 01 00 00 01 00 00 00 95 03
@@ -153,7 +155,7 @@ namespace NotepadBufferParser
                             var un3 = reader.ReadBytes(1); //TODO: Unknown 
                             c.AddBytes(un3);
 
-                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); 
+                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL");
                         }
                         else
                         {
