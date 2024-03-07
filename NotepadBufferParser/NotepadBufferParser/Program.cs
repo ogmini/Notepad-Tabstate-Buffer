@@ -10,15 +10,13 @@ using System.IO.Hashing;
 using System.Text.RegularExpressions;
 using CommandLine;
 
-
-
 namespace NotepadBufferParser
 {
     internal static class Program
     {
         public class Options
         {
-            [Option('o', "output", Required = false, HelpText = "Output folder")]
+            [Option('o', "output", Required = false, Default = "results", HelpText = "Output folder")]
             public string OutputFolder { get; set; }
 
             [Option('i', "input", Required = false, HelpText = "Input folder")]
@@ -31,8 +29,10 @@ namespace NotepadBufferParser
             {
                 //TODO: Grab copies and parse them.
                 Console.WriteLine("********** Starting *********");
-                string folder = (string.IsNullOrWhiteSpace(o.InputFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState" : o.InputFolder);                
-                string pwd = (string.IsNullOrEmpty(o.OutputFolder) ? Directory.GetCurrentDirectory() : o.OutputFolder);
+                string folder = (string.IsNullOrWhiteSpace(o.InputFolder) ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState") : o.InputFolder);
+                string pwd = Path.Combine(Directory.GetCurrentDirectory(), o.OutputFolder); //(string.IsNullOrEmpty(o.OutputFolder) ? Directory.GetCurrentDirectory() : o.OutputFolder);
+
+                Directory.CreateDirectory(pwd);
 
                 Console.WriteLine("Copying files from: {0} to {1}", folder, pwd);
                 foreach (var path in Directory.EnumerateFiles(folder, "*.bin"))
