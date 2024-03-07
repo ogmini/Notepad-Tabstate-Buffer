@@ -13,11 +13,31 @@ There are different types of .bin files that appear to save the state of the var
 
 For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text. I have not attacked the 0.bin and 1.bin files.
 
+# Acknowledgements
+
+[NordGaren](https://github.com/Nordgaren) for the inspiration to take a look at this when I saw his [tabstate-util](https://github.com/Nordgaren/tabstate-util)   
+[jlogsdon](https://github.com/jlogsdon) for lots of help and suggestions   
+[JustArion](https://github.com/JustArion) for pointing out the Selection Index 
+
+
 ## Overall Behavior
+
+- Opening Notepad with no existing tab(s) will create an empty "Untitled" tab with its associated bin.
+- Opening a file will create an associated bin.
+- Closing a specific tab within Notepad will delete the associated bin file(s).  
+- Closing Notepad
+  - New tab with no changes will create an associated bin, 0.bin, and 1.bin.
+  - New tab with unsaved changes will create an associated bin.
+    - On subsequent open/close of Notepad it will create an associated bin, 0.bin, and 1.bin. (Existing Tab Behavior) 
+  - Opened file tab with no changes will create an associated bin
+    - On subsequent open/close of Notepad it will create an associated bin, 0.bin, and 1.bin. (Existing Tab Behavior)  
+  - Opened file tab with unsaved changes will create an associated bin.
+    - On subsequent open/close of Notepad it will create an associated bin, 0.bin, and 1.bin. (Existing Tab Behavior)
+  - Existing tab fi viewed will create an associated bin, 0.bin, and 1.bin.
+- No bin files indicate having never opened Notepad or closed all tab(s) manually.
 
 > WORK IN PROGRESS
 
- - Why do .bin files get deleted?
  - When do 0.bin and 1.bin get created?
  - Why do 0.bin and 1.bin get created?
  - What causes a flush of the Unsaved Buffer?
@@ -35,17 +55,18 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Length of Filepath (Stored as an unsigned LEB128)
  - Filepath as little-ending UTF-16
  - Length of original content (Stored as an unsigned LEB128)
-   - Followed by 05 01?
-   - Random Bytes
-     - 43 bytes for a saved file on disk 
-   - 00 01 00 00 01 00 00 00 + bytes for length of original content as LEB128 again
-   - Ex. 95 03 05 01 F8 E3 AC C5 87 E6 9B ED 01 ED E9 78 0A 41 0D 40 B2 F2 68 3B BF E8 BC B0 F8 27 84 08 38 C1 84 5C D4 1A BC AA 0E 87 F6 AB B1 00 01 00 00 01 00 00 00 95 03 (Where 95 03 is the length of the original content)
- - ~~Unknown appears to be 45 bytes followed by a delimiter (Need to investigate. Below is definitely not exactly right)~~
-   -  ~~The 45 bytes seem to end with the bytes for the length of the original content twice, 01 00 00 00, and the length of the original content again. (Ex. 96 02 96 02 01 00 00 00 96 02 when the length of the original content was 96 02 or 278)~~
+ - 43 Unknown Bytes (Seemingly starting with 05 01)
+ - Delimiter of 00 01?
+ - Selection Start Index on save (Stored as an unsigned LEB128) (Thanks [JustArion](https://github.com/JustArion) for pointing this out)
+   - I don't think this will extend to the Unsaved tab as this seems to only show up on Save 
+ - Selection End Index on save (Stored as an unsigned LEB128) (Thanks [JustArion](https://github.com/JustArion) for pointing this out)
+   - I don't think this will extend to the Unsaved tab as this seems to only show up on Save     
+ - Delimiter of 01 00 00 00?
+ - Length of original content (Stored as an unsigned LEB128)
  - Content
  - Unknown 1 byte
    - Possibly a NULL as a delimiter
- - CRC 32 of the all previous bytes starting from the 3rd byte 
+ - CRC 32 of all the previous bytes starting from the 3rd byte 
  - Unsaved Buffer Chunks
 
 ### Unsaved Tab
@@ -63,12 +84,25 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Content
  - Unknown 1 byte
    - Possibly a NULL as a delimiter
- - CRC 32 of the all previous bytes starting from the 3rd byte 
+ - CRC 32 of all the previous bytes starting from the 3rd byte 
  - Unsaved Buffer Chunks
+
+### 0.bin / 1.bin
+
+- First 2 bytes are "NP"
+- Sequence number (Stored as an unsigned LEB128) 
+- Unknown bytes
+  - "4th" byte 09 or 08 (File on disk vs unsaved tab)
+  - Variable chunk seen
+    - 2 bytes unknown
+    - Selection Start Index on close (Stored as an unsigned LEB128)  
+    - Selection End Index on close (Stored as an unsigned LEB128)   
+  - 01 00 00 00 before CRC
+- CRC 32 of all the previous bytes starting from the 3rd byte
 
 ## Chunk Format for Unsaved Buffer
 
-[Cursor Position][Deletion][Addition][Unknown]
+[Cursor Position][Deletion][Addition][CRC32]
 - Cursor position (Stored as a unsigned LEB128)
 - Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
 - Addition Action (Stored as an unsigned LEB128 indicating how many characters to add)
