@@ -75,7 +75,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
 
 ## Chunk Format for Unsaved Buffer
 
-[Cursor Position][Deletion][Addition][Unknown]
+[Cursor Position][Deletion][Addition][CRC32]
 - Cursor position (Stored as a unsigned LEB128)
 - Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
 - Addition Action (Stored as an unsigned LEB128 indicating how many characters to add)
