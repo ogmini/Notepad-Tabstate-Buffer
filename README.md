@@ -93,7 +93,10 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
 - Sequence number (Stored as an unsigned LEB128) 
 - Unknown bytes
   - "4th" byte 09 or 08 (File on disk vs unsaved tab)
-  - Varible chunk seen 4 and 5 bytes 
+  - Variable chunk seen
+    - 2 bytes unknown
+    - Selection Start Index on close (Stored as an unsigned LEB128)  
+    - Selection End Index on close (Stored as an unsigned LEB128)   
   - 01 00 00 00 before CRC
 - CRC 32 of all the previous bytes starting from the 3rd byte
 
