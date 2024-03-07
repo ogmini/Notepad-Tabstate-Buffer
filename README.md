@@ -90,9 +90,8 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
 ### 0.bin / 1.bin
 
 - First 2 bytes are "NP"
-- 3rd byte might reference the bin number. (00 for 0.bin and 01 for 1.bin)
-- 4th byte 09 (Need more testing)
-- 14 Unknown Bytes
+- Sequence number (Stored as an unsigned LEB128) 
+- Unknown bytes
 - CRC 32 of all the previous bytes starting from the 3rd byte
 
 ## Chunk Format for Unsaved Buffer
