@@ -72,7 +72,7 @@ namespace NotepadBufferParser
                             CRC32Check c = new CRC32Check();
                             c.AddBytes(0x01);
 
-                            var fPathLength = LEB128Converter.ReadLEB128Unsigned(stream); //Filepath string length
+                            var fPathLength = stream.ReadLEB128Unsigned(); //Filepath string length
                             c.AddBytes(fPathLength);
 
                             var fPathBytes = reader.ReadBytes((int)fPathLength * 2);
@@ -81,20 +81,27 @@ namespace NotepadBufferParser
                             var fPath = Encoding.Unicode.GetString(fPathBytes);
                             Console.WriteLine("Original File Location: {0}", fPath);
 
-                            var fileContentLength = LEB128Converter.ReadLEB128Unsigned(stream); //Original Filecontent length
+                            var fileContentLength = stream.ReadLEB128Unsigned(); //Original Filecontent length
                             c.AddBytes(fileContentLength);
 
                             //TODO: YUCK. There is something more going on here...
                             var delim = LEB128Converter.WriteLEB128Unsigned(fileContentLength); 
-                            var numBytes = (delim.Length) + 8;
                             //end delimiter appears to be 00 01 00 00 01 00 00 00 fileContentLength
                             var un1 = reader.ReadBytes(43); //Unknown... This doesn't feel right???
                             c.AddBytes(un1);
-
-                            var un2 = reader.ReadBytes(numBytes); //Unknown maybe delimiter??? Appears to be 00 01 00 00, followed by 01 00 00 00, and the fileContentLength
+                            
+                            var un2 = reader.ReadBytes(2); //Unknown maybe delimiter??? Appears to be 00 01 00 00, followed by 01 00 00 00, and the fileContentLength
                             c.AddBytes(un2);
+                            var selectionIndex = reader.BaseStream.ReadLEB128Unsigned();
+                            c.AddBytes(selectionIndex);
+                            var selectionLength = reader.BaseStream.ReadLEB128Unsigned();
+                            c.AddBytes(selectionLength);
+                            var un3 = reader.ReadBytes(4);
+                            c.AddBytes(un3);
                             //95 03 05 01 F8 E3 AC C5 87 E6 9B ED 01 ED E9 78 0A 41 0D 40 B2 F2 68 3B BF E8 BC B0 F8 27 84 08 38 C1 84 5C D4 1A BC AA 0E 87 F6 AB B1 00 01 00 00 01 00 00 00 95 03
 
+                            fileContentLength = reader.BaseStream.ReadLEB128Unsigned();
+                            c.AddBytes(fileContentLength);
                             var originalContentBytes = reader.ReadBytes((int)fileContentLength * 2);
                             c.AddBytes(originalContentBytes);
 
@@ -103,10 +110,16 @@ namespace NotepadBufferParser
 
                             Console.WriteLine("Original Content: {0}", new string(originalContent));
 
-                            var un3 = reader.ReadBytes(1); //TODO: Unknown 
-                            c.AddBytes(un3);
+                            var un4 = reader.ReadBytes(1); //TODO: Unknown 
+                            c.AddBytes(un4);
 
-                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL"); 
+                            Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "FAIL");
+
+                            if (selectionIndex != selectionLength)
+                            {
+                                var segment = new ArraySegment<char>(originalContent, (int)selectionIndex, (int)selectionLength);
+                                Console.WriteLine("Selected text: {0}", new string(segment.Array));
+                            }
 
                         }
                         else if (!isFile) //Unsaved Tab
@@ -120,7 +133,7 @@ namespace NotepadBufferParser
                             var un1 = reader.ReadBytes(1); //TODO: Unknown 
                             c.AddBytes(un1);
 
-                            var fileContentLength = LEB128Converter.ReadLEB128Unsigned(stream);
+                            var fileContentLength = stream.ReadLEB128Unsigned();
                             c.AddBytes(fileContentLength);
 
                             var delim = LEB128Converter.WriteLEB128Unsigned(fileContentLength);
@@ -154,13 +167,13 @@ namespace NotepadBufferParser
                         {
                             CRC32Check c = new CRC32Check();
 
-                            var charPos = LEB128Converter.ReadLEB128Unsigned(stream);
+                            var charPos = stream.ReadLEB128Unsigned();
                             c.AddBytes(charPos);
                             
-                            var charDeletion = LEB128Converter.ReadLEB128Unsigned(stream);
+                            var charDeletion = stream.ReadLEB128Unsigned();
                             c.AddBytes(charDeletion);
 
-                            var charAddition = LEB128Converter.ReadLEB128Unsigned(stream);
+                            var charAddition = stream.ReadLEB128Unsigned();
                             c.AddBytes(charAddition);
 
 
