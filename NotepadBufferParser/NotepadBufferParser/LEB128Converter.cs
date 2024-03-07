@@ -31,6 +31,25 @@ namespace NotepadBufferParser
             return value;
         }
 
+        public static ulong ReadLEB128Unsigned(this BinaryReader reader)
+        {
+            ulong value = 0;
+            var shift = 0;
+            var more = true;
+
+            while (more)
+            {
+                var next = reader.ReadByte();
+
+                more = (next & 0x80) != 0;   // extract msb
+                var chunk = next & 0x7fUL; // extract lower 7 bits
+                value |= chunk << shift;
+                shift += 7;
+            }
+
+            return value;
+        }
+
         public static byte[] WriteLEB128Unsigned(ulong value)
         {
             byte[] bArray = new byte[0];

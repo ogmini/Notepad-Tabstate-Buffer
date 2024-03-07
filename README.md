@@ -15,7 +15,12 @@ For now, I will be focusing on getting a better understanding of the underlying 
 
 ## Overall Behavior
 
+> WORK IN PROGRESS
 
+ - Why do .bin files get deleted?
+ - When do 0.bin and 1.bin get created?
+ - Why do 0.bin and 1.bin get created?
+ - What causes a flush of the Unsaved Buffer?
 
 ## File Format
 
