@@ -29,7 +29,8 @@ For now, I will be focusing on getting a better understanding of the underlying 
   - New tab with no changes will create an associated bin, 0.bin, and 1.bin.
   - New tab with unsaved changes will create an associated bin.
     - On subsequent open/close of Notepad it will create an associated bin, 0.bin, and 1.bin. (Existing Tab Behavior) 
-  - Opened file tab with no changes will create an associated bin, 0.bin, and 1.bin.  
+  - Opened file tab with no changes will create an associated bin
+    - On subsequent open/close of Notepad it will create an associated bin, 0.bin, and 1.bin. (Existing Tab Behavior)  
   - Opened file tab with unsaved changes will create an associated bin.
     - On subsequent open/close of Notepad it will create an associated bin, 0.bin, and 1.bin. (Existing Tab Behavior)
   - Existing tab will create an associated bin, 0.bin, and 1.bin.
