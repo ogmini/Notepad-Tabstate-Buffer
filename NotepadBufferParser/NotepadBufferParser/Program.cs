@@ -61,28 +61,49 @@ namespace NotepadBufferParser
 
                         if (hdrType == "NP")
                         {
+                            List<char> buffer = new List<char>(); //TODO: Use this for playback 
+
                             Console.WriteLine("=========== Processing File ==========");
                             Console.WriteLine("{0}", Path.GetFileName(filePath));
 
                             var sequenceNumber = stream.ReadLEB128Unsigned();
                             Console.WriteLine("Sequence Number: {0}", sequenceNumber.ToString());
 
+                            var typeFlag = reader.ReadBytes(1);
+                            Console.WriteLine("typeFlag: {0}", BytestoString(typeFlag));
+
+                            switch (typeFlag[0])
+                            {
+                                case 0: //Unsaved - buffer file
+                                    
+                                    break;
+                                case 1: //Saved - buffer file
+
+                                    break;
+                                case 8: //Unsaved - state file
+
+                                    break;
+                                case 9: //Saved - state file
+
+                                    break;
+                                default:
+                                    break;
+                            }
+
                             if (Path.GetFileNameWithoutExtension(filePath).EndsWith(".0") || Path.GetFileNameWithoutExtension(filePath).EndsWith(".1"))
                             {
+                                Console.WriteLine("- State File");
                                 CRC32Check c = new CRC32Check();
                                 c.AddBytes(sequenceNumber);
+                                c.AddBytes(typeFlag);
 
-                                var un = reader.ReadBytes(1);
-                                c.AddBytes(un);
-                                Console.WriteLine("Unknown bytes - un: {0}", BytestoString(un));
-
-                                if (un[0] == 8) //Not saved
+                                if (typeFlag[0] == 8) //Not saved
                                 {
                                     var un1 = reader.ReadBytes(2); //TODO: This is variable.  Might be tied to file saved or not. Why/What?
                                     c.AddBytes(un1);
                                     Console.WriteLine("Unknown bytes - un1: {0}", BytestoString(un1));
                                 }
-                                else if (un[0] == 9) //Tab saved
+                                else if (typeFlag[0] == 9) //Tab saved
                                 {
                                     var un1 = reader.ReadBytes(3); //TODO: This is variable.  Might be tied to file saved or not. Why/What?
                                     c.AddBytes(un1);
@@ -99,18 +120,15 @@ namespace NotepadBufferParser
                                 c.AddBytes(un2);
                                 Console.WriteLine("Unknown bytes - un2: {0}", BytestoString(un2));
 
-                                Console.WriteLine("#.bin CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "!!!FAIL!!!");
+                                Console.WriteLine("State File CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "!!!FAIL!!!");
                             }
                             else
                             {
-                                var isFile = reader.ReadBytes(1); //Is this a boolean or some other? Assuming bool for now...
-
-                                List<char> buffer = new List<char>(); //TODO: Use this for playback 
-
-                                if (BitConverter.ToBoolean(isFile, 0)) //Saved file
+                                Console.WriteLine("- Buffer File");
+                                if (typeFlag[0] == 1) //Saved file
                                 {
                                     CRC32Check c = new CRC32Check();
-                                    c.AddBytes(isFile);
+                                    c.AddBytes(typeFlag);
 
                                     var fPathLength = stream.ReadLEB128Unsigned(); //Filepath string length
                                     c.AddBytes(fPathLength);
@@ -126,9 +144,17 @@ namespace NotepadBufferParser
 
                                     //TODO: YUCK. There is something more going on here...
                                     //end delimiter appears to be 00 01 00 00 01 00 00 00 fileContentLength
-                                    var un1 = reader.ReadBytes(43); //Unknown... This doesn't feel right???
+                                    var un1 = reader.ReadBytes(2); //Unknown... This doesn't feel right???
                                     c.AddBytes(un1);
                                     Console.WriteLine("Unknown bytes - un1: {0}", BytestoString(un1));
+
+                                    var timeStamp = stream.ReadLEB128Unsigned();
+                                    c.AddBytes(timeStamp);
+                                    Console.WriteLine("Timestamp {0} - {1}", timeStamp, DateTime.FromFileTime((long)timeStamp)); //TODO: Compare this against other timestamps for DFIR purposes.
+
+                                    var un2 = reader.ReadBytes(32);
+                                    c.AddBytes(un2);
+                                    Console.WriteLine("Unknown bytes - un2: {0}", BytestoString(un2));
 
                                     var delim1 = reader.ReadBytes(2); //Unknown maybe delimiter??? Appears to be 00 01 
                                     c.AddBytes(delim1);
@@ -155,9 +181,9 @@ namespace NotepadBufferParser
 
                                     Console.WriteLine("Original Content: {0}", new string(originalContent));
 
-                                    var un2 = reader.ReadBytes(1); //TODO: Unknown 
-                                    c.AddBytes(un2);
-                                    Console.WriteLine("Unknown bytes - un2: {0}", BytestoString(un2));
+                                    var un3 = reader.ReadBytes(1); //TODO: Unknown 
+                                    c.AddBytes(un3);
+                                    Console.WriteLine("Unknown bytes - un3: {0}", BytestoString(un3));
 
                                     Console.WriteLine("Original Content CRC Match: {0}", c.Check(reader.ReadBytes(4)) ? "PASS" : "!!!FAIL!!!");
 
@@ -168,12 +194,12 @@ namespace NotepadBufferParser
                                     }
 
                                 }
-                                else if (!BitConverter.ToBoolean(isFile, 0)) //Unsaved Tab
+                                else if (typeFlag[0] == 0) //Unsaved Tab
                                 {
                                     Console.WriteLine("Unsaved Tab: {0}", Path.GetFileName(filePath));
 
                                     CRC32Check c = new CRC32Check();
-                                    c.AddBytes(isFile);
+                                    c.AddBytes(typeFlag);
 
                                     //TODO: YUCK. There is something more going on here...
                                     var un1 = reader.ReadBytes(1); //TODO: Unknown 
