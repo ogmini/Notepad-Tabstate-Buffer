@@ -56,7 +56,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
    - Maybe Sequence number (Stored as a uLEB128)(Always 00)
  - 4th byte appears to be flag for saved file
  - Length of Filepath (Stored as an unsigned LEB128)
- - Filepath as little-ending UTF-16
+ - Filepath as little-endian UTF-16
  - Length of original content (Stored as a uLEB128)
  - Delimiter of 05 01?
  - Timestamp stored as a uLEB128
