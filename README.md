@@ -19,7 +19,7 @@ Please see my other repository for the [Windowstate files](https://github.com/og
 
 [NordGaren](https://github.com/Nordgaren) for the inspiration to take a look at this when I saw his [tabstate-util](https://github.com/Nordgaren/tabstate-util)   
 [jlogsdon](https://github.com/jlogsdon) for lots of help and suggestions   
-[JustArion](https://github.com/JustArion) for pointing out the Selection Index 
+[JustArion](https://github.com/JustArion) for pointing out the Selection Index and Timestamp
 
 
 ## Overall Behavior
@@ -53,19 +53,21 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - First 2 bytes are "NP"
  - 3rd byte is unknown
    - Possibly a NULL as a delimiter
-   - Maybe Sequence number (Stored as an unsigned LEB128)(Always 00)
+   - Maybe Sequence number (Stored as a uLEB128)(Always 00)
  - 4th byte appears to be flag for saved file
  - Length of Filepath (Stored as an unsigned LEB128)
  - Filepath as little-ending UTF-16
- - Length of original content (Stored as an unsigned LEB128)
- - 43 Unknown Bytes (Seemingly starting with 05 01)
+ - Length of original content (Stored as a uLEB128)
+ - Delimiter of 05 01?
+ - Timestamp stored as a uLEB128
+ - 32 Unknown Bytes 
  - Delimiter of 00 01?
- - Selection Start Index on save (Stored as an unsigned LEB128) (Thanks [JustArion](https://github.com/JustArion) for pointing this out)
+ - Selection Start Index on save (Stored as a uLEB128)
    - I don't think this will extend to the Unsaved tab as this seems to only show up on Save 
- - Selection End Index on save (Stored as an unsigned LEB128) (Thanks [JustArion](https://github.com/JustArion) for pointing this out)
+ - Selection End Index on save (Stored as a uLEB128) 
    - I don't think this will extend to the Unsaved tab as this seems to only show up on Save     
  - Delimiter of 01 00 00 00?
- - Length of original content (Stored as an unsigned LEB128)
+ - Length of original content (Stored as a uLEB128)
  - Content
  - Unknown 1 byte
    - Possibly a NULL as a delimiter
@@ -77,14 +79,14 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - First 2 bytes are "NP"
  - 3rd byte is unknown
    - Possibly a NULL as a delimiter
-   - Maybe Sequence number (Stored as an unsigned LEB128)(Always 00)
+   - Maybe Sequence number (Stored as a uLEB128)(Always 00)
  - 4th byte appears to be flag for unsaved tab
  - Always 01? Is this also length of Filepath like above?
- - Length of original content (Stored as an unsigned LEB128)
- - Length of original content AGAIN (Stored as an unsigned LEB128)
+ - Length of original content (Stored as a uLEB128)
+ - Length of original content AGAIN (Stored as a uLEB128)
  - Followed by 01 00 00 00
    - Random Bytes
- - Length of original content AGAIN (Stored as an unsigned LEB128)
+ - Length of original content AGAIN (Stored as a uLEB128)
  - Content
  - Unknown 1 byte
    - Possibly a NULL as a delimiter
@@ -94,22 +96,22 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
 ### 0.bin / 1.bin
 
 - First 2 bytes are "NP"
-- Sequence number (Stored as an unsigned LEB128)
+- Sequence number (Stored as a uLEB128)
 - "4th" byte 08 or 09 (File on disk (09) vs unsaved tab (08))
 - Unknown bytes
   - Variable chunk seen
     - 2 or 3 bytes Unknown (Depedent on the "4th" byte)
-    - Selection Start Index on close (Stored as an unsigned LEB128)  
-    - Selection End Index on close (Stored as an unsigned LEB128)   
+    - Selection Start Index on close (Stored as a uLEB128)  
+    - Selection End Index on close (Stored as a uLEB128)   
   - 01 00 00 00 before CRC
 - CRC 32 of all the previous bytes starting from the 3rd byte
 
 ## Chunk Format for Unsaved Buffer
 
 [Cursor Position][Deletion][Addition][CRC32]
-- Cursor position (Stored as a unsigned LEB128)
-- Deletion Action (Stored as an unsigned LEB128 indicating how many characters to delete)
-- Addition Action (Stored as an unsigned LEB128 indicating how many characters to add)
+- Cursor position (Stored as a uLEB128)
+- Deletion Action (Stored as a uLEB128 indicating how many characters to delete)
+- Addition Action (Stored as a uLEB128 indicating how many characters to add)
   - Added characters are stored as little-endian UTF-16
 - CRC 32 of the previous bytes
   
