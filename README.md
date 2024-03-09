@@ -13,6 +13,8 @@ There are different types of .bin files that appear to save the state of the var
 
 For now, I will be focusing on getting a better understanding of the underlying structure for a new unsaved tab with text. I have not attacked the 0.bin and 1.bin files.
 
+Please see my other repository for the [Windowstate files](https://github.com/ogmini/Notepad-Windowstate-Buffer/).
+
 # Acknowledgements
 
 [NordGaren](https://github.com/Nordgaren) for the inspiration to take a look at this when I saw his [tabstate-util](https://github.com/Nordgaren/tabstate-util)   
@@ -51,6 +53,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - First 2 bytes are "NP"
  - 3rd byte is unknown
    - Possibly a NULL as a delimiter
+   - Maybe Sequence number (Stored as an unsigned LEB128)(Always 00)
  - 4th byte appears to be flag for saved file
  - Length of Filepath (Stored as an unsigned LEB128)
  - Filepath as little-ending UTF-16
@@ -74,7 +77,8 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - First 2 bytes are "NP"
  - 3rd byte is unknown
    - Possibly a NULL as a delimiter
- - 4th byte appears to be flag for saved file
+   - Maybe Sequence number (Stored as an unsigned LEB128)(Always 00)
+ - 4th byte appears to be flag for unsaved tab
  - Always 01? Is this also length of Filepath like above?
  - Length of original content (Stored as an unsigned LEB128)
  - Length of original content AGAIN (Stored as an unsigned LEB128)
@@ -90,11 +94,11 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
 ### 0.bin / 1.bin
 
 - First 2 bytes are "NP"
-- Sequence number (Stored as an unsigned LEB128) 
+- Sequence number (Stored as an unsigned LEB128)
+- "4th" byte 08 or 09 (File on disk (09) vs unsaved tab (08))
 - Unknown bytes
-  - "4th" byte 09 or 08 (File on disk vs unsaved tab)
   - Variable chunk seen
-    - 2 bytes unknown
+    - 2 or 3 bytes Unknown (Depedent on the "4th" byte)
     - Selection Start Index on close (Stored as an unsigned LEB128)  
     - Selection End Index on close (Stored as an unsigned LEB128)   
   - 01 00 00 00 before CRC
