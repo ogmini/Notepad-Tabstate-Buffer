@@ -58,7 +58,8 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Length of Filepath (Stored as a uLEB128)
  - Filepath as little-endian UTF-16
  - Length of original content (Stored as a uLEB128)
- - Delimiter of 05 01?
+ - Encoding
+ - Carriage Return Type
  - Timestamp stored as a uLEB128
  - SHA256 of the original saved file
  - Delimiter of 00 01?
@@ -97,13 +98,12 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
 
 - First 2 bytes are "NP"
 - Sequence number (Stored as a uLEB128)
-- "4th" byte 08 or 09 (File on disk (09) vs unsaved tab (08))
-- Unknown bytes
-  - Variable chunk seen
-    - 2 or 3 bytes Unknown (Depedent on the "4th" byte)
-    - Selection Start Index on close (Stored as a uLEB128)  
-    - Selection End Index on close (Stored as a uLEB128)   
-  - 01 00 00 00 before CRC
+- 4th number of bytes until the CRC at the end (What is this stored as? uLEB128? int? )
+- Delimiter? 0x00
+- Size of the associated BIN File in bytes (Stored as a uLEB128)
+- Selection Start Index on close (Stored as a uLEB128)  
+- Selection End Index on close (Stored as a uLEB128)   
+- Delimiter? 01 00 00 00 
 - CRC 32 of all the previous bytes starting from the 3rd byte
 
 ## Chunk Format for Unsaved Buffer
