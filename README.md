@@ -17,9 +17,9 @@ Please see my other repository for the [Windowstate files](https://github.com/og
 
 # Acknowledgements
 
-[NordGaren](https://github.com/Nordgaren) for the inspiration to take a look at this when I saw his [tabstate-util](https://github.com/Nordgaren/tabstate-util)   
-[jlogsdon](https://github.com/jlogsdon) for lots of help
-[JustArion](https://github.com/JustArion) for lots of help
+[NordGaren](https://github.com/Nordgaren) for the inspiration to take a look at this when I saw his [tabstate-util](https://github.com/Nordgaren/tabstate-util)     
+[jlogsdon](https://github.com/jlogsdon) for lots of help  
+[JustArion](https://github.com/JustArion) for lots of help  
 
 
 ## Overall Behavior
