@@ -146,9 +146,14 @@ namespace NotepadBufferParser
 
                                     //TODO: YUCK. There is something more going on here...
 
-                                    var un1 = reader.ReadBytes(2); //Unknown... This doesn't feel right???
-                                    c.AddBytes(un1);
-                                    Console.WriteLine("Unknown bytes - un1: {0}", BytestoString(un1));
+                                    //Encoding and SequenceType
+                                    var enc = reader.ReadBytes(1);
+                                    c.AddBytes(enc);
+                                    Console.WriteLine("Encoding: {0}", BytestoString(enc));
+
+                                    var crType = reader.ReadBytes(1);
+                                    c.AddBytes(crType);
+                                    Console.WriteLine("Carriage Return Type: {0}", BytestoString(crType));
 
                                     var timeStamp = stream.ReadLEB128Unsigned();
                                     c.AddBytes(timeStamp);
