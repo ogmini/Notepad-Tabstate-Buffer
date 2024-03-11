@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.IO.Hashing;
 using System.Text.RegularExpressions;
 using CommandLine;
+using System.Security.Cryptography;
+using System.IO.Pipes;
 
 namespace NotepadBufferParser
 {
@@ -143,18 +145,30 @@ namespace NotepadBufferParser
                                     c.AddBytes(fileContentLength);
 
                                     //TODO: YUCK. There is something more going on here...
-                                    //end delimiter appears to be 00 01 00 00 01 00 00 00 fileContentLength
+
                                     var un1 = reader.ReadBytes(2); //Unknown... This doesn't feel right???
                                     c.AddBytes(un1);
                                     Console.WriteLine("Unknown bytes - un1: {0}", BytestoString(un1));
 
                                     var timeStamp = stream.ReadLEB128Unsigned();
                                     c.AddBytes(timeStamp);
-                                    Console.WriteLine("Timestamp {0} - {1}", timeStamp, DateTime.FromFileTime((long)timeStamp)); //TODO: Compare this against other timestamps for DFIR purposes.
+                                    Console.WriteLine("Timestamp {0} - {1}", timeStamp, DateTime.FromFileTime((long)timeStamp));
+                                    //TODO: Compare this against other timestamps for DFIR purposes.
+                                    //TODO: Is this Timestamp for the original file or the state file? What timestamp is this...
 
-                                    var un2 = reader.ReadBytes(32);
-                                    c.AddBytes(un2);
-                                    Console.WriteLine("Unknown bytes - un2: {0}", BytestoString(un2));
+                                    var sha256File = reader.ReadBytes(32);
+                                    c.AddBytes(sha256File);
+                                    using (SHA256 s256 = SHA256.Create())
+                                    {
+                                        using (FileStream fStream = new FileStream(fPath, FileMode.Open))
+                                        {
+                                            fStream.Position = 0;
+                                            byte[] hashValue = s256.ComputeHash(fStream);
+                                            //Console.WriteLine("SHA256 {0}: ", BytestoString(hashValue));
+                                            Console.WriteLine("SHA256 Check: {0}", hashValue.SequenceEqual(sha256File) ? "PASS" : "!!!FAIL!!!");
+                         
+                                        }
+                                    }
 
                                     var delim1 = reader.ReadBytes(2); //Unknown maybe delimiter??? Appears to be 00 01 
                                     c.AddBytes(delim1);
@@ -169,7 +183,6 @@ namespace NotepadBufferParser
                                     var delim2 = reader.ReadBytes(4); //Unknown maybe delimiter??? Appears to be 01 00 00 00
                                     c.AddBytes(delim2);
                                     Console.WriteLine("Unknown bytes - delim2: {0}", BytestoString(delim2));
-                                    //95 03 05 01 F8 E3 AC C5 87 E6 9B ED 01 ED E9 78 0A 41 0D 40 B2 F2 68 3B BF E8 BC B0 F8 27 84 08 38 C1 84 5C D4 1A BC AA 0E 87 F6 AB B1 00 01 00 00 01 00 00 00 95 03
 
                                     fileContentLength = reader.BaseStream.ReadLEB128Unsigned();
                                     c.AddBytes(fileContentLength);
