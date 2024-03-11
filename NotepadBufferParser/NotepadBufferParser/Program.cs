@@ -97,20 +97,22 @@ namespace NotepadBufferParser
                                 Console.WriteLine("- State File");
                                 CRC32Check c = new CRC32Check();
                                 c.AddBytes(sequenceNumber);
-                                c.AddBytes(typeFlag);
+                                c.AddBytes(typeFlag); //Does this give number of bytes to end. Prior to CRC?
 
-                                if (typeFlag[0] == 8) //Not saved
-                                {
-                                    var un1 = reader.ReadBytes(2); //TODO: This is variable.  Might be tied to file saved or not. Why/What?
-                                    c.AddBytes(un1);
-                                    Console.WriteLine("Unknown bytes - un1: {0}", BytestoString(un1));
-                                }
-                                else if (typeFlag[0] == 9) //Tab saved
-                                {
-                                    var un1 = reader.ReadBytes(3); //TODO: This is variable.  Might be tied to file saved or not. Why/What?
-                                    c.AddBytes(un1);
-                                    Console.WriteLine("Unknown bytes - un1: {0}", BytestoString(un1));
-                                }
+                                var un1 = reader.ReadBytes(1); 
+                                c.AddBytes(un1);
+                                Console.WriteLine("Unknown bytes - un1: {0}", BytestoString(un1));
+
+                                var binSize = stream.ReadLEB128Unsigned();
+                                c.AddBytes(binSize);
+                                
+
+                                string binFileName = Path.GetFileNameWithoutExtension(filePath).Remove(Path.GetFileNameWithoutExtension(filePath).Length-2);
+                                string binFilepath = Path.GetDirectoryName(filePath) + @"\" + binFileName + ".bin";
+
+                                FileInfo f = new FileInfo(binFilepath);
+                                Console.WriteLine("BIN Size Check: {0} - {1} bytes to {2} bytes", (long)binSize == f.Length ? "PASS" : "!!!FAIL!!!" , binSize, f.Length); //TODO: Compare this
+
 
                                 var selectionStartIndex = reader.BaseStream.ReadLEB128Unsigned();
                                 c.AddBytes(selectionStartIndex);
@@ -157,7 +159,7 @@ namespace NotepadBufferParser
 
                                     var timeStamp = stream.ReadLEB128Unsigned();
                                     c.AddBytes(timeStamp);
-                                    Console.WriteLine("Timestamp {0} - {1}", timeStamp, DateTime.FromFileTime((long)timeStamp));
+                                    Console.WriteLine("Timestamp - {1}", timeStamp, DateTime.FromFileTime((long)timeStamp));
                                     //TODO: Compare this against other timestamps for DFIR purposes.
                                     //TODO: Is this Timestamp for the original file or the state file? What timestamp is this...
 
