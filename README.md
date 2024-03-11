@@ -67,7 +67,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
    - I don't think this will extend to the Unsaved tab as this seems to only show up on Save 
  - Selection End Index on save (Stored as a uLEB128) 
    - I don't think this will extend to the Unsaved tab as this seems to only show up on Save     
- - Delimiter of 01 00 00 00?
+ - Delimiter? 01 00 00 00 
  - Length of original content (Stored as a uLEB128)
  - Content
  - Unknown 1 byte
@@ -85,8 +85,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Always 01? Is this also length of Filepath like above?
  - Length of original content (Stored as a uLEB128)
  - Length of original content AGAIN (Stored as a uLEB128)
- - Followed by 01 00 00 00
-   - Random Bytes
+ - Delimiter? 01 00 00 00 
  - Length of original content AGAIN (Stored as a uLEB128)
  - Content
  - Unknown 1 byte
