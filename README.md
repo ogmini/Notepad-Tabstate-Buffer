@@ -98,7 +98,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
 
 - First 2 bytes are "NP"
 - Sequence number (Stored as a uLEB128)
-- 4th number of bytes until the CRC at the end (What is this stored as? uLEB128? int? Assume uLEB128?)
+- 4th number of bytes until the CRC at the end (What is this stored as? uLEB128? int? )
 - Delimiter? 0x00
 - Size of the associated BIN File in bytes (Stored as a uLEB128)
 - Selection Start Index on close (Stored as a uLEB128)  
