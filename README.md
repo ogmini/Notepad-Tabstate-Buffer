@@ -58,7 +58,8 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Length of Filepath (Stored as a uLEB128)
  - Filepath as little-endian UTF-16
  - Length of original content (Stored as a uLEB128)
- - Delimiter of 05 01?
+ - Encoding
+ - Carriage Return Type
  - Timestamp stored as a uLEB128
  - SHA256 of the original saved file
  - Delimiter of 00 01?
