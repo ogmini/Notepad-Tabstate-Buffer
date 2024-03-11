@@ -71,10 +71,10 @@ namespace NotepadBufferParser
                             var sequenceNumber = stream.ReadLEB128Unsigned();
                             Console.WriteLine("Sequence Number: {0}", sequenceNumber.ToString());
 
-                            var typeFlag = reader.ReadBytes(1);
-                            Console.WriteLine("typeFlag: {0}", BytestoString(typeFlag));
+                            var typeFlag = stream.ReadLEB128Unsigned();
+                            Console.WriteLine("typeFlag: {0}", typeFlag);
 
-                            switch (typeFlag[0])
+                            switch (typeFlag)
                             {
                                 case 0: //Unsaved - buffer file
                                     
@@ -129,7 +129,7 @@ namespace NotepadBufferParser
                             else
                             {
                                 Console.WriteLine("- Buffer File");
-                                if (typeFlag[0] == 1) //Saved file
+                                if (typeFlag == 1) //Saved file
                                 {
                                     CRC32Check c = new CRC32Check();
                                     c.AddBytes(typeFlag);
@@ -159,10 +159,10 @@ namespace NotepadBufferParser
 
                                     var timeStamp = stream.ReadLEB128Unsigned();
                                     c.AddBytes(timeStamp);
-                                    Console.WriteLine("Timestamp - {1}", timeStamp, DateTime.FromFileTime((long)timeStamp));
-                                    //TODO: Compare this against other timestamps for DFIR purposes.
-                                    //TODO: Is this Timestamp for the original file or the state file? What timestamp is this...
+                                    FileInfo f = new FileInfo(fPath);
 
+                                    Console.WriteLine("Timestamp Check: {0} - {2}", DateTime.FromFileTime((long)timeStamp) == f.LastWriteTime ? "PASS" : "!!!FAIL!!!", timeStamp, DateTime.FromFileTime((long)timeStamp));
+                                    
                                     var sha256File = reader.ReadBytes(32);
                                     c.AddBytes(sha256File);
                                     using (SHA256 s256 = SHA256.Create())
@@ -214,7 +214,7 @@ namespace NotepadBufferParser
                                     }
 
                                 }
-                                else if (typeFlag[0] == 0) //Unsaved Tab
+                                else if (typeFlag == 0) //Unsaved Tab
                                 {
                                     Console.WriteLine("Unsaved Tab: {0}", Path.GetFileName(filePath));
 
