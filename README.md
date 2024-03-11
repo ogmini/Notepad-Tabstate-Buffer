@@ -18,8 +18,8 @@ Please see my other repository for the [Windowstate files](https://github.com/og
 # Acknowledgements
 
 [NordGaren](https://github.com/Nordgaren) for the inspiration to take a look at this when I saw his [tabstate-util](https://github.com/Nordgaren/tabstate-util)   
-[jlogsdon](https://github.com/jlogsdon) for lots of help and suggestions   
-[JustArion](https://github.com/JustArion) for pointing out the Selection Index and Timestamp
+[jlogsdon](https://github.com/jlogsdon) for lots of help
+[JustArion](https://github.com/JustArion) for lots of help
 
 
 ## Overall Behavior
@@ -55,12 +55,12 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
    - Possibly a NULL as a delimiter
    - Maybe Sequence number (Stored as a uLEB128)(Always 00)
  - 4th byte appears to be flag for saved file
- - Length of Filepath (Stored as an unsigned LEB128)
+ - Length of Filepath (Stored as a uLEB128)
  - Filepath as little-endian UTF-16
  - Length of original content (Stored as a uLEB128)
  - Delimiter of 05 01?
  - Timestamp stored as a uLEB128
- - 32 Unknown Bytes 
+ - SHA256 of the original saved file
  - Delimiter of 00 01?
  - Selection Start Index on save (Stored as a uLEB128)
    - I don't think this will extend to the Unsaved tab as this seems to only show up on Save 
