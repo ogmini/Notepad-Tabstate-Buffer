@@ -41,8 +41,8 @@ Please see my other repository for the [Windowstate files](https://github.com/og
 
 > WORK IN PROGRESS
 
- - When do 0.bin and 1.bin get created?
- - Why do 0.bin and 1.bin get created?
+ - When/Why do 0.bin and 1.bin get created?
+ - When/Why do 0.bin and 1.bin get deleted?
  - What causes a flush of the Unsaved Buffer?
 
 ## File Format
