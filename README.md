@@ -72,7 +72,11 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
    - I don't think this will extend to the Unsaved tab as this seems to only show up on Save 
  - Selection End Index on save (Stored as a uLEB128) 
    - I don't think this will extend to the Unsaved tab as this seems to only show up on Save     
- - Delimiter? 01 00 00 00 (Appears to be WordWrap , Right to Left, Show Unicode, Unknown)
+ - Delimiter? 01 00 00 00 
+   - WordWrap
+   - Right to Left
+   - Show Unicode
+   - Unknown
  - Length of original content (Stored as a uLEB128)
  - Content
  - Unknown 1 byte
@@ -90,7 +94,11 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Always 01? Is this also length of Filepath like above?
  - Length of original content (Stored as a uLEB128)
  - Length of original content AGAIN (Stored as a uLEB128)
- - Delimiter? 01 00 00 00 ((Appears to be WordWrap , Right to Left, Show Unicode, Unknown - But this doesn't change. Changes do appear in the 0.bin and 1.bin) 
+ - Delimiter? 01 00 00 00 (This doesn't change. Changes do appear in the 0.bin and 1.bin)
+   - WordWrap
+   - Right to Left
+   - Show Unicode
+   - Unknown 
  - Length of original content AGAIN (Stored as a uLEB128)
  - Content
  - Unknown 1 byte
@@ -107,7 +115,11 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
 - Size of the associated BIN File in bytes (Stored as a uLEB128)
 - Selection Start Index on close (Stored as a uLEB128)  
 - Selection End Index on close (Stored as a uLEB128)   
-- Delimiter? 01 00 00 00 (Appears to be WordWrap , Right to Left, Show Unicode, Unknown)
+- Delimiter? 01 00 00 00 
+   - WordWrap
+   - Right to Left
+   - Show Unicode
+   - Unknown
 - CRC 32 of all the previous bytes starting from the 3rd byte
 
 ## Chunk Format for Unsaved Buffer
