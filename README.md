@@ -64,7 +64,10 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Filepath as little-endian UTF-16
  - Length of original content (Stored as a uLEB128)
  - Encoding
-   - TODO: Test others
+   - 0x01 ANSI
+   - 0x02 UTF16LE
+   - 0x03 UTF16BE
+   - 0x04 UTF8BOM
    - 0x05 UTF8
  - Carriage Return Type
    - 0x01 Windows(CRLF)
