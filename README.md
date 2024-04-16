@@ -44,6 +44,8 @@ Please see my other repository for the [Windowstate files](https://github.com/og
  - When/Why do 0.bin and 1.bin get created?
  - When/Why do 0.bin and 1.bin get deleted?
  - What causes a flush of the Unsaved Buffer?
+ - The internal content of the bin file doesn't load until the tab is visible.
+   - We can see this behavior if you drag/drop multiple text files into notepad to open them. 
 
 ## File Format
 
