@@ -60,7 +60,11 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Filepath as little-endian UTF-16
  - Length of original content (Stored as a uLEB128)
  - Encoding
+   - TODO: Test others
+   - 0x05 UTF8
  - Carriage Return Type
+   - 0x01 Windows(CRLF)
+   - 0x03 Unix(LF)
  - Timestamp stored as a uLEB128
  - SHA256 of the original saved file
  - Delimiter of 00 01?
