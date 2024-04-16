@@ -82,7 +82,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
  - Unknown 1 byte
    - Possibly a NULL as a delimiter
  - CRC 32 of all the previous bytes starting from the 3rd byte 
- - Unsaved Buffer Chunks
+ - [Unsaved Buffer Chunks](https://github.com/ogmini/Notepad-Tabstate-Buffer/blob/main/README.md#chunk-format-for-unsaved-buffer) 
 
 ### Unsaved Tab
 
