@@ -71,6 +71,7 @@ There appear to be two slightly different file formats for File Tabs and Unsaved
    - 0x05 UTF8
  - Carriage Return Type
    - 0x01 Windows(CRLF)
+   - 0x02 Macintosh (CR)
    - 0x03 Unix(LF)
  - Timestamp stored as a uLEB128
  - SHA256 of the original saved file
