@@ -1,9 +1,7 @@
-> [!WARNING]  
-> WORK IN PROGRESS
->
-> What you see here are ever evolving notes and changing code as I investigate the file format.
-
 # Notepad-Tabstate-Buffer
+
+>[!IMPORTANT]
+>This project is being deprecated and rolled into [Notepad State Library](https://github.com/ogmini/Notepad-State-Library). No updates will be made to this project. All new notes, documentation, and code will be at the new repository. 
 
 These are my attempts to reverse engineer the Tabstate files for Notepad in Microsoft Windows 11.. These files are located at: `%localappdata%\Packages\Microsoft.WindowsNotepad_8wekyb3d8bbwe\LocalState\TabState`
 
